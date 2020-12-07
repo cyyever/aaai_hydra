@@ -41,8 +41,12 @@ if __name__ == "__main__":
         mode="wt",
     ) as f:
         json.dump(randomized_label_map, f)
+
+    def after_epoch_callback(trainer, epoch, cur_learning_rates, **kwargs):
+        trainer.save_model(args.save_dir, model_name=str(epoch) + ".pt")
+
     trainer.set_training_dataset(
         replace_dataset_labels(training_dataset, randomized_label_map)
     )
 
-    trainer.train()
+    trainer.train(after_epoch_callbacks=[after_epoch_callback])
