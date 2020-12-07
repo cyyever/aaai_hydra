@@ -1,0 +1,1 @@
+python3 hypergradient_clustering.py --dataset_name FashionMNIST --model_name LeNet5 --randomized_label_map_path hypergradient_clustering/FashionMNIST/randomized_label_map.json --contribution_vector_dict_path hypergradient_clustering/FashionMNIST/contribution_vector_dict.json
