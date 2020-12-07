@@ -18,7 +18,7 @@ from cyy_naive_pytorch_lib.algorithm.normalization import normalize_for_heatmap
 from cyy_naive_pytorch_lib.arg_parse import (get_inferencer_from_args,
                                              get_parsed_args,
                                              get_training_dataset)
-from cyy_naive_pytorch_lib.dataset import (get_dataset_labels,
+from cyy_naive_pytorch_lib.dataset import (get_dataset_label_names,
                                            split_dataset_by_class)
 
 matplotlib.use("Agg")
@@ -122,7 +122,7 @@ def compute_distribution(
     mean_array = mean_array - mean_array.mean()
     mean_array = mean_array / mean_array.std()
 
-    label_list = get_dataset_labels(args.dataset_name)
+    label_list = get_dataset_label_names(args.dataset_name)
     if args.task_name == "MNIST":
         label_list = [" " * 18 + str(a) for a in label_list]
     mean_array = normalize_for_heatmap(mean_array)
