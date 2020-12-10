@@ -50,6 +50,7 @@ if __name__ == "__main__":
 
     def after_epoch_callback(hyper_gradient_trainer: Trainer, epoch, **kwargs):
         trainer = hyper_gradient_trainer.trainer
+        trainer.save_model(args.save_dir, model_name=str(epoch) + ".pt")
         test_gradient = trainer.get_inferencer(
             MachineLearningPhase.Test).get_gradient()
 

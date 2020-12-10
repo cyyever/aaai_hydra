@@ -10,7 +10,7 @@ from cyy_naive_pytorch_lib.algorithm.influence_function.classic_influence_functi
 from cyy_naive_pytorch_lib.arg_parse import (create_inferencer_from_args,
                                              create_trainer_from_args,
                                              get_arg_parser, get_parsed_args)
-from cyy_naive_pytorch_lib.dataset import split_dataset, sub_dataset
+from cyy_naive_pytorch_lib.dataset import sub_dataset
 from cyy_naive_pytorch_lib.gradient import get_dataset_gradients
 
 if __name__ == "__main__":
@@ -32,12 +32,17 @@ if __name__ == "__main__":
     trainer = create_trainer_from_args(args)
     inferencer = create_inferencer_from_args(args)
     model_file = "model.pt"
+    assert os.path.isfile(os.path.join(args.model_dir, model_file))
     trainer.load_model(os.path.join(args.model_dir, model_file))
     inferencer.load_model(os.path.join(args.model_dir, model_file))
 
-    training_sub_datasets = split_dataset(trainer.training_dataset)
+    training_sub_datasets = dict()
+    for index in range(len(trainer.training_dataset)):
+        training_sub_datasets[index] = sub_dataset(
+            trainer.training_dataset, [index])
     training_sample_gradients = get_dataset_gradients(
         training_sub_datasets, inferencer)
+    print("compute_classic_influence_function")
 
     contribution_dict = compute_classic_influence_function(
         trainer,
@@ -58,15 +63,16 @@ if __name__ == "__main__":
     boundary_contribution = contribution[0]
     positive_indices = []
     for k, v in contribution_dict.items():
-        # if v >= boundary_contribution:
-        if v < boundary_contribution:
+        if v >= boundary_contribution:
             positive_indices.append(int(k))
 
-    trainer.training_dataset = sub_dataset(
-        trainer.training_dataset, positive_indices)
-
-    get_logger().info("begin train")
-    results = trainer.repeated_train(5, None, plot_class_accuracy=False)
+    trainer.set_training_dataset(
+        sub_dataset(trainer.training_dataset, positive_indices)
+    )
+    print("begin repeated_train")
+    results = trainer.repeated_train(
+        5, save_dir=None, plot_class_accuracy=False, test_epoch_interval=1
+    )
     get_logger().info("training_loss is %s", results["training_loss"])
     get_logger().info("validation_loss is %s", results["validation_loss"])
     get_logger().info(

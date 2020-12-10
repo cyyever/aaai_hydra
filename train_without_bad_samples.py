@@ -65,11 +65,3 @@ if __name__ == "__main__":
             results["validation_accuracy"])
         get_logger().info("test_loss is %s", results["test_loss"])
         get_logger().info("test_accuracy is %s", results["test_accuracy"])
-
-        # trainer.train()
-        # print(
-        #     compute_classic_influence_function(
-        #         trainer,
-        #         0,
-        #         dampling_term=0.01,
-        #         scale=10))
