@@ -10,8 +10,10 @@ Windows is not supported currently. You need a recent Ubuntu/Archlinux/Freebsd d
 
 #### Software modules
 
+```
 pytorch >= 1.7
 gcc >= 10.2
+```
 
 #### Simple install 
 
