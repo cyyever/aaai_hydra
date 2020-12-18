@@ -6,7 +6,7 @@
 
 #### Operating System
 
-Windows is not supported currently.
+Windows is not supported currently. You need a recent Ubuntu/Archlinux/Freebsd distribution.
 
 #### Software modules
 
