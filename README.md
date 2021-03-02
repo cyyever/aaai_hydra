@@ -1,4 +1,4 @@
-# aaai_hydra_8686
+# aaai_hydra
 
 ## Installation
 
