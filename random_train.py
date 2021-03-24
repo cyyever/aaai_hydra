@@ -26,7 +26,7 @@ if __name__ == "__main__":
     )
 
     trainer = create_trainer_from_args(args)
-    training_dataset = trainer.training_dataset
+    training_dataset = trainer.dataset
 
     randomized_label_map = DatasetUtil(training_dataset).randomize_subset_label(
         args.random_percentage

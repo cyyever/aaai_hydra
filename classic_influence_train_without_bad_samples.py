@@ -37,9 +37,9 @@ if __name__ == "__main__":
     inferencer.load_model(os.path.join(args.model_dir, model_file))
 
     training_sub_datasets = dict()
-    for index in range(len(trainer.training_dataset)):
+    for index in range(len(trainer.dataset)):
         training_sub_datasets[index] = sub_dataset(
-            trainer.training_dataset, [index])
+            trainer.dataset, [index])
     training_sample_gradients = get_dataset_gradients(
         training_sub_datasets, inferencer)
     print("compute_classic_influence_function")
@@ -67,7 +67,7 @@ if __name__ == "__main__":
             positive_indices.append(int(k))
 
     trainer.set_training_dataset(
-        sub_dataset(trainer.training_dataset, positive_indices)
+        sub_dataset(trainer.dataset, positive_indices)
     )
     print("begin repeated_train")
     results = trainer.repeated_train(

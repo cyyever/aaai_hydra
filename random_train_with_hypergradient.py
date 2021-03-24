@@ -23,13 +23,12 @@ if __name__ == "__main__":
             "randomized_hypergradient",
             args.dataset_name,
             args.model_name,
-            "{date:%Y-%m-%d_%H:%M:%S}.log".format(
-                date=datetime.datetime.now()),
+            "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
         )
     )
 
     hyper_gradient_trainer = create_hyper_gradient_trainer_from_args(args)
-    training_dataset = hyper_gradient_trainer.trainer.training_dataset
+    training_dataset = hyper_gradient_trainer.trainer.dataset
 
     randomized_label_map = DatasetUtil(training_dataset).randomize_subset_label(
         args.random_percentage
@@ -51,23 +50,19 @@ if __name__ == "__main__":
     def after_epoch_callback(hyper_gradient_trainer: Trainer, epoch, **kwargs):
         trainer = hyper_gradient_trainer.trainer
         trainer.save_model(args.save_dir, model_name=str(epoch) + ".pt")
-        test_gradient = trainer.get_inferencer(
-            MachineLearningPhase.Test).get_gradient()
+        test_gradient = trainer.get_inferencer(MachineLearningPhase.Test).get_gradient()
 
         contribution_dict = dict()
 
         def compute_contribution(sample_index, hyper_gradient):
             sample_index = int(sample_index)
             contribution_dict[sample_index] = (
-                -(test_gradient @ hyper_gradient) /
-                len(trainer.training_dataset)
+                -(test_gradient @ hyper_gradient) / len(trainer.dataset)
             ).data.item()
 
-        hyper_gradient_trainer.foreach_hyper_gradient(
-            True, compute_contribution)
+        hyper_gradient_trainer.foreach_hyper_gradient(True, compute_contribution)
         with open(
-            os.path.join(args.save_dir, str(epoch) +
-                         ".contribution.json"), "wt"
+            os.path.join(args.save_dir, str(epoch) + ".contribution.json"), "wt"
         ) as f:
             json.dump(contribution_dict, f)
 

@@ -34,7 +34,7 @@ def compute_contribution(args):
 
     training_sub_datasets = dict()
     for index, training_sub_dataset in enumerate(
-        split_dataset(trainer.training_dataset)
+        split_dataset(trainer.dataset)
     ):
         training_sub_datasets[index] = training_sub_dataset
 
@@ -73,7 +73,7 @@ def compute_contribution(args):
             ] = contribution
 
     assert set(contribution_dict.keys()) == set(
-        range(len(trainer.training_dataset)))
+        range(len(trainer.dataset)))
     with open(os.path.join(result_dir, "contribution_dict.json"), mode="wt") as f:
         json.dump(contribution_dict, f)
 

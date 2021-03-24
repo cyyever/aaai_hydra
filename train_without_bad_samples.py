@@ -26,7 +26,7 @@ if __name__ == "__main__":
     )
 
     trainer = create_trainer_from_args(args)
-    full_training_dataset = trainer.training_dataset
+    full_training_dataset = trainer.dataset
 
     # for epoch in range(1, args.epochs + 1):
     for epoch in range(args.epochs, args.epochs + 1):

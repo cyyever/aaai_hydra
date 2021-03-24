@@ -32,7 +32,7 @@ def after_epoch_callback(hyper_gradient_trainer, epoch):
     hyper_gradient_distance = dict()
     hessian_hyper_gradient_contribution = dict()
     approximation_hyper_gradient_contribution = dict()
-    training_set_size = len(trainer.training_dataset)
+    training_set_size = len(trainer.dataset)
     for chunk in split_list_to_chunks(
         hyper_gradient_trainer.hessian_hyper_gradient_mom_dict.keys(), 100
     ):

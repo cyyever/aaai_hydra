@@ -33,7 +33,7 @@ if __name__ == "__main__":
             hyper_gradient_indices = json.load(f)
             print("use", len(hyper_gradient_indices), "indices")
     else:
-        hyper_gradient_indices = list(range(len(trainer.training_dataset)))
+        hyper_gradient_indices = list(range(len(trainer.dataset)))
     for epoch in range(args.min_epoch, args.max_epoch):
         model_path = os.path.join(
             args.save_dir,
@@ -57,7 +57,7 @@ if __name__ == "__main__":
         training_sub_datasets = dict()
         for hyper_gradient_index in hyper_gradient_indices:
             training_sub_datasets[hyper_gradient_index] = sub_dataset(
-                trainer.training_dataset, [hyper_gradient_index]
+                trainer.dataset, [hyper_gradient_index]
             )
 
         training_sample_gradients = get_dataset_gradients(
