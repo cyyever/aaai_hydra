@@ -8,12 +8,12 @@ from cyy_naive_pytorch_lib.algorithm.influence_function.args import (
     add_arguments_to_parser, create_hyper_gradient_trainer_from_args)
 from cyy_naive_pytorch_lib.arg_parse import get_parsed_args
 from cyy_naive_pytorch_lib.dataset import DatasetUtil, replace_dataset_labels
-from cyy_naive_pytorch_lib.local_types import MachineLearningPhase
+from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
 from cyy_naive_pytorch_lib.trainer import Trainer
 
 if __name__ == "__main__":
     parser = add_arguments_to_parser()
-    parser.add_argument("--random_percentage", type=float, required=True)
+    parser.add_argument("--label_noise_percent", type=float, required=True)
     args = get_parsed_args(parser)
     args.save_dir = os.path.join(args.save_dir, "randomized_model")
 
@@ -31,7 +31,7 @@ if __name__ == "__main__":
     training_dataset = hyper_gradient_trainer.trainer.dataset
 
     randomized_label_map = DatasetUtil(training_dataset).randomize_subset_label(
-        args.random_percentage
+        args.label_noise_percent
     )
 
     os.makedirs(args.save_dir, exist_ok=True)
