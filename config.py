@@ -15,7 +15,7 @@ class HyDRAExperimentConfig(HyDRAConfig):
         super().load_args(parser=parser)
 
 
-def get_config() -> HyDRAConfig:
+def get_config() -> HyDRAExperimentConfig:
     config = HyDRAExperimentConfig()
     config.load_args()
     return config
