@@ -37,8 +37,7 @@ def compute_distribution(
     analyzer = HyperGradientAnalyzer(tester, hyper_gradient_dir)
 
     training_subset = dict()
-    for label, label_dataset in split_dataset_by_class(
-            training_dataset).items():
+    for label, label_dataset in split_dataset_by_class(training_dataset).items():
         get_logger().info("compute label %s", label)
         training_subset[label] = set(label_dataset["indices"])
         if indices is not None:
@@ -56,8 +55,7 @@ def compute_distribution(
         means[training_label] = dict()
         for test_label, v in tmp.items():
             means[training_label][test_label] = v / (
-                len(training_subset[training_label]) *
-                len(test_subset[test_label])
+                len(training_subset[training_label]) * len(test_subset[test_label])
             )
 
     result_dir = os.path.join(
@@ -104,8 +102,7 @@ def compute_distribution(
                     )
                     diagonal_sum += means[subset_label][test_label]
                 else:
-                    line += " " + \
-                        "{:e}".format(means[subset_label][test_label])
+                    line += " " + "{:e}".format(means[subset_label][test_label])
             print(line, file=f)
             means_list.append(sub_list)
 
@@ -151,8 +148,7 @@ if __name__ == "__main__":
             "hypergradient_distribution",
             args.dataset_name,
             args.model_name,
-            "{date:%Y-%m-%d_%H:%M:%S}.log".format(
-                date=datetime.datetime.now()),
+            "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
         )
     )
     training_dataset = get_training_dataset(args)
@@ -171,8 +167,7 @@ if __name__ == "__main__":
         for k, v in json.load(f).items():
             randomized_label_map[int(k)] = int(v)
         get_logger().info(
-            "%s fake samples", len(randomized_label_map) /
-            len(training_dataset)
+            "%s fake samples", len(randomized_label_map) / len(training_dataset)
         )
 
         compute_distribution(
