@@ -10,25 +10,26 @@ import torch
 from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_order
 from cyy_naive_lib.log import get_logger
 from cyy_naive_pytorch_lib.algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_naive_pytorch_lib.dataset import save_sample, sub_dataset
+from cyy_naive_pytorch_lib.dataset import DatasetUtil, sub_dataset
 from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
 
 from config import get_config
 
 
-def get_instance_statistics(validator, instance_dataset):
+def get_instance_statistics(validator, instance_dataset) -> dict:
     tmp_validator = copy.deepcopy(validator)
-    tmp_validator.set_dataset(instance_dataset)
-    other_data = tmp_validator.validate(1, per_sample_prob=True)[2]
-    return other_data["per_sample_prob"][0]
+    tmp_validator.dataset_collection.transform_dataset(
+        MachineLearningPhase.Test, lambda _: instance_dataset
+    )
+    tmp_validator.inference(sample_prob=True)
+    return tmp_validator.prob_metric.get_prob(1)[0]
 
 
 def save_training_image(save_dir, validator, contribution, training_dataset, index):
     sample_dataset = sub_dataset(training_dataset, [index])
     max_prob_index, max_prob = get_instance_statistics(validator, sample_dataset)
 
-    save_sample(
-        sample_dataset,
+    DatasetUtil(sample_dataset).save_sample_image(
         0,
         os.path.join(
             save_dir,
@@ -47,8 +48,7 @@ def save_test_image(save_dir, validator, contribution, index):
     sample_dataset = sub_dataset(validator.dataset, [index])
     max_prob_index, max_prob = get_instance_statistics(validator, sample_dataset)
 
-    save_sample(
-        sample_dataset,
+    DatasetUtil(sample_dataset).save_sample_image(
         0,
         os.path.join(
             save_dir,
@@ -68,9 +68,8 @@ if __name__ == "__main__":
     parser.add_argument("--sample_index", type=int, default=None)
     parser.add_argument("--hydra_dir", type=str, required=True)
     parser.add_argument("--threshold", type=float)
+    config = get_config(parser=parser)
     args = parser.parse_args()
-
-    config = get_config()
     trainer = config.create_trainer()
     training_dataset = trainer.dataset
     validator = config.create_inferencer(phase=MachineLearningPhase.Test)
