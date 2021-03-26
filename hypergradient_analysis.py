@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 
+import argparse
 import copy
-import datetime
+import json
 import os
+import pickle
 
 import torch
 from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_order
-from cyy_naive_lib.log import get_logger, set_file_handler
-from cyy_naive_pytorch_lib.algorithm.influence_function.args import \
-    add_arguments_to_parser
-from cyy_naive_pytorch_lib.algorithm.influence_function.hyper_gradient_analyzer import \
-    HyperGradientAnalyzer
-from cyy_naive_pytorch_lib.arg_parse import (get_inferencer_from_args,
-                                             get_parsed_args,
-                                             get_training_dataset)
+from cyy_naive_lib.log import get_logger
+from cyy_naive_pytorch_lib.algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
 from cyy_naive_pytorch_lib.dataset import save_sample, sub_dataset
+from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
+
+from config import get_config
 
 
 def get_instance_statistics(validator, instance_dataset):
@@ -24,11 +23,9 @@ def get_instance_statistics(validator, instance_dataset):
     return other_data["per_sample_prob"][0]
 
 
-def save_training_image(save_dir, validator,
-                        contribution, training_dataset, index):
+def save_training_image(save_dir, validator, contribution, training_dataset, index):
     sample_dataset = sub_dataset(training_dataset, [index])
-    max_prob_index, max_prob = get_instance_statistics(
-        validator, sample_dataset)
+    max_prob_index, max_prob = get_instance_statistics(validator, sample_dataset)
 
     save_sample(
         sample_dataset,
@@ -48,8 +45,7 @@ def save_training_image(save_dir, validator,
 
 def save_test_image(save_dir, validator, contribution, index):
     sample_dataset = sub_dataset(validator.dataset, [index])
-    max_prob_index, max_prob = get_instance_statistics(
-        validator, sample_dataset)
+    max_prob_index, max_prob = get_instance_statistics(validator, sample_dataset)
 
     save_sample(
         sample_dataset,
@@ -68,48 +64,48 @@ def save_test_image(save_dir, validator, contribution, index):
 
 
 if __name__ == "__main__":
-
-    parser = add_arguments_to_parser()
+    parser = argparse.ArgumentParser()
     parser.add_argument("--sample_index", type=int, default=None)
+    parser.add_argument("--hydra_dir", type=str, required=True)
     parser.add_argument("--threshold", type=float)
-    args = get_parsed_args(parser)
+    args = parser.parse_args()
 
-    file_name = "{date:%Y-%m-%d_%H:%M:%S}".format(date=datetime.datetime.now())
-    if args.sample_index is None:
-        file_name += ".log"
-    else:
-        file_name += ".sample_" + str(args.sample_index) + ".log"
-    set_file_handler(
-        os.path.join(
-            "log",
-            "hypergradient_analysis",
-            args.dataset_name,
-            args.model_name,
-            file_name,
-        )
-    )
+    config = get_config()
+    trainer = config.create_trainer()
+    training_dataset = trainer.dataset
+    validator = config.create_inferencer(phase=MachineLearningPhase.Test)
 
-    task_name = args.task_name
-    training_dataset = get_training_dataset(args)
-    validator = get_inferencer_from_args(args)
-    analyzer = HyperGradientAnalyzer(validator, args.hyper_gradient_dir)
     contribution = None
     if args.sample_index is None:
-        contribution_dict = analyzer.get_contributions()
-        contribution = torch.Tensor(
-            list(get_mapping_values_by_order(contribution_dict))
-        )
+        with open(
+            os.path.join(args.hydra_dir, "approx_hydra_contribution.json"),
+            mode="rt",
+        ) as f:
+            contribution_dict = json.load(f)
+            contribution = torch.Tensor(
+                list(get_mapping_values_by_order(contribution_dict))
+            )
     else:
         test_subset = dict()
         for idx in range(len(validator.dataset)):
             test_subset[idx] = [idx]
+        training_set_size = None
+        with open(
+            os.path.join(args.hydra_dir, "training_set_size"),
+            mode="rb",
+        ) as f:
+            training_set_size = pickle.load(f)
+        analyzer = HyDRAAnalyzer(
+            validator,
+            os.path.join(args.hydra_dir, "approximation_hyper_gradient_dir"),
+            training_set_size,
+        )
         contribution_dict = analyzer.get_subset_contributions(
             training_subset_dict={args.sample_index: [args.sample_index]},
             test_subset_dict=test_subset,
         )
         contribution = torch.Tensor(
-            list(get_mapping_values_by_order(
-                contribution_dict[args.sample_index]))
+            list(get_mapping_values_by_order(contribution_dict[args.sample_index]))
         )
 
     std, mean = torch.std_mean(contribution)
@@ -127,8 +123,7 @@ if __name__ == "__main__":
         "negative contributions is %s", contribution[contribution < 0].shape
     )
 
-    analysis_result_dir = os.path.join(
-        "hypergradient_analysis_result", task_name)
+    analysis_result_dir = os.path.join(args.hydra_dir, "hydra_analysis_result")
     if args.sample_index is not None:
         analysis_result_dir = os.path.join(
             analysis_result_dir, "sample_" + str(args.sample_index)
