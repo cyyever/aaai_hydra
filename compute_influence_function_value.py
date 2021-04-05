@@ -1,35 +1,28 @@
 #!/usr/bin/env python3
+import argparse
 import json
 import os
 
 from cyy_naive_pytorch_lib.algorithm.influence_function.classic_influence_function import \
     compute_classic_influence_function
-from cyy_naive_pytorch_lib.arg_parse import (create_inferencer_from_args,
-                                             create_trainer_from_args,
-                                             get_arg_parser, get_parsed_args)
-from cyy_naive_pytorch_lib.dataset import sub_dataset
-from cyy_naive_pytorch_lib.gradient import get_dataset_gradients
+from cyy_naive_pytorch_lib.algorithm.sample_gradient.sample_gradient_util import \
+    get_sample_gradient_dict
 from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
 
 from config import get_config
 
-# from tools.configuration import get_task_configuration
-
 if __name__ == "__main__":
-    parser = get_arg_parser()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--hydra_root_dir", type=str, required=True)
     parser.add_argument("--min_epoch", type=int)
     parser.add_argument("--max_epoch", type=int, default=1000)
-    parser.add_argument("--hydra_root_dir", type=int, default=1000)
-    config = get_config()
-    config.load_args(parser)
+    config = get_config(parser)
 
     trainer = config.create_trainer()
     inferencer = config.create_inferencer(phase=MachineLearningPhase.Test)
-    hyper_gradient_indices = []
     hyper_gradient_indices_path = os.path.join(
-        args.save_dir, "..", "hyper_gradient_indices.json"
+        config.hydra_root_dir, "hyper_gradient_indices.json"
     )
-    assert os.path.isfile(hyper_gradient_indices_path)
     if os.path.isfile(hyper_gradient_indices_path):
         with open(
             hyper_gradient_indices_path,
@@ -39,43 +32,33 @@ if __name__ == "__main__":
             print("use", len(hyper_gradient_indices), "indices")
     else:
         hyper_gradient_indices = list(range(len(trainer.dataset)))
-    for epoch in range(args.min_epoch, args.max_epoch):
-        model_path = os.path.join(args.save_dir, "model_epoch_" + str(epoch) + ".pt")
+    for epoch in range(config.min_epoch, config.max_epoch):
+        model_path = os.path.join(config.save_dir, "model_epoch_" + str(epoch) + ".pt")
         if not os.path.isfile(model_path):
             continue
-        if os.path.isfile(
-            os.path.join(
-                args.save_dir,
-                "classic_influence_function_contribution_" + str(epoch) + ".json",
-            )
-        ):
-            continue
-        print("do epoch", epoch)
+        print("compute in epoch", epoch)
         trainer.load_model(model_path)
-        validator.load_model(model_path)
+        inferencer.load_model(model_path)
+        test_gradient = inferencer.get_gradient()
 
-        training_sub_datasets = dict()
-        for hyper_gradient_index in hyper_gradient_indices:
-            training_sub_datasets[hyper_gradient_index] = sub_dataset(
-                trainer.dataset, [hyper_gradient_index]
-            )
+        inferencer.transform_dataset(lambda _: trainer.dataset)
 
-        training_sample_gradients = get_dataset_gradients(
-            training_sub_datasets, validator
+        training_sample_gradients = get_sample_gradient_dict(
+            inferencer, hyper_gradient_indices
         )
 
         contributions = compute_classic_influence_function(
             trainer,
-            validator.get_gradient(),
+            test_gradient,
             training_sample_gradients,
-            batch_size=args.batch_size,
+            batch_size=config.batch_size,
             dampling_term=0.01,
             scale=1000,
             epsilon=0.03,
         )
         with open(
             os.path.join(
-                args.save_dir,
+                config.save_dir,
                 "classic_influence_function_contribution_" + str(epoch) + ".json",
             ),
             mode="wt",
