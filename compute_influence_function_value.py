@@ -9,6 +9,9 @@ from cyy_naive_pytorch_lib.arg_parse import (create_inferencer_from_args,
                                              get_arg_parser, get_parsed_args)
 from cyy_naive_pytorch_lib.dataset import sub_dataset
 from cyy_naive_pytorch_lib.gradient import get_dataset_gradients
+from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
+
+from config import get_config
 
 # from tools.configuration import get_task_configuration
 
@@ -16,10 +19,12 @@ if __name__ == "__main__":
     parser = get_arg_parser()
     parser.add_argument("--min_epoch", type=int)
     parser.add_argument("--max_epoch", type=int, default=1000)
+    parser.add_argument("--hydra_root_dir", type=int, default=1000)
+    config = get_config()
+    config.load_args(parser)
 
-    args = get_parsed_args(parser)
-    trainer = create_trainer_from_args(args)
-    validator = create_inferencer_from_args(args)
+    trainer = config.create_trainer()
+    inferencer = config.create_inferencer(phase=MachineLearningPhase.Test)
     hyper_gradient_indices = []
     hyper_gradient_indices_path = os.path.join(
         args.save_dir, "..", "hyper_gradient_indices.json"
@@ -35,18 +40,13 @@ if __name__ == "__main__":
     else:
         hyper_gradient_indices = list(range(len(trainer.dataset)))
     for epoch in range(args.min_epoch, args.max_epoch):
-        model_path = os.path.join(
-            args.save_dir,
-            "model_epoch_" +
-            str(epoch) +
-            ".pt")
+        model_path = os.path.join(args.save_dir, "model_epoch_" + str(epoch) + ".pt")
         if not os.path.isfile(model_path):
             continue
         if os.path.isfile(
             os.path.join(
                 args.save_dir,
-                "classic_influence_function_contribution_" +
-                str(epoch) + ".json",
+                "classic_influence_function_contribution_" + str(epoch) + ".json",
             )
         ):
             continue
@@ -76,8 +76,7 @@ if __name__ == "__main__":
         with open(
             os.path.join(
                 args.save_dir,
-                "classic_influence_function_contribution_" +
-                str(epoch) + ".json",
+                "classic_influence_function_contribution_" + str(epoch) + ".json",
             ),
             mode="wt",
         ) as f:
