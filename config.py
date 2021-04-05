@@ -8,9 +8,6 @@ class HyDRAExperimentConfig(HyDRAConfig):
         # self.tracking_percentage = None
         self.tracking_percentage = 0.01
 
-    def load_args(self, parser=None):
-        super().load_args(parser=parser)
-
 
 def get_config(parser=None) -> HyDRAExperimentConfig:
     config = HyDRAExperimentConfig()
