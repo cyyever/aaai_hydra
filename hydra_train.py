@@ -11,11 +11,11 @@ if __name__ == "__main__":
     set_file_handler(
         os.path.join(
             "log",
-            "hypergradient",
+            "hydra",
             config.dataset_name,
             config.model_name,
             "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
         )
     )
-    hyper_gradient_trainer = config.create_trainer()
-    hyper_gradient_trainer.train()
+    hydra_trainer = config.create_trainer()
+    hydra_trainer.train()

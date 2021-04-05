@@ -1,5 +1,3 @@
-import argparse
-
 from cyy_naive_pytorch_lib.algorithm.hydra.hydra_config import HyDRAConfig
 
 
@@ -11,8 +9,6 @@ class HyDRAExperimentConfig(HyDRAConfig):
         self.tracking_percentage = 0.01
 
     def load_args(self, parser=None):
-        if parser is None:
-            parser = argparse.ArgumentParser()
         super().load_args(parser=parser)
 
 
