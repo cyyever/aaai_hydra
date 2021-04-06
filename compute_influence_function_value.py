@@ -3,8 +3,8 @@ import argparse
 import json
 import os
 
-from cyy_naive_pytorch_lib.algorithm.influence_function.classic_influence_function import \
-    compute_classic_influence_function
+from cyy_naive_pytorch_lib.algorithm.influence_function import \
+    compute_influence_function
 from cyy_naive_pytorch_lib.algorithm.sample_gradient.sample_gradient_util import \
     get_sample_gradient_dict
 from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
@@ -49,7 +49,7 @@ if __name__ == "__main__":
             inferencer, tracking_indices
         )
 
-        contributions = compute_classic_influence_function(
+        contributions = compute_influence_function(
             trainer,
             test_gradient,
             training_sample_gradients,
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         with open(
             os.path.join(
                 config.save_dir,
-                "classic_influence_function_contribution_" + str(epoch) + ".json",
+                "influence_function_contribution_" + str(epoch) + ".json",
             ),
             mode="wt",
         ) as f:

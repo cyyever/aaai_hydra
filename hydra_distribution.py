@@ -1,54 +1,64 @@
 #!/usr/bin/env python3
 
-import copy
+import argparse
 import datetime
 import json
 import os
+import pickle
 import sys
 
 import matplotlib
 import numpy
 import seaborn
 from cyy_naive_lib.log import get_logger, set_file_handler
-from cyy_naive_pytorch_lib.algorithm.influence_function.args import \
-    add_arguments_to_parser
-from cyy_naive_pytorch_lib.algorithm.influence_function.hyper_gradient_analyzer import \
-    HyperGradientAnalyzer
+from cyy_naive_pytorch_lib.algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
 from cyy_naive_pytorch_lib.algorithm.normalization import normalize_for_heatmap
-from cyy_naive_pytorch_lib.arg_parse import (get_inferencer_from_args,
-                                             get_parsed_args,
-                                             get_training_dataset)
-from cyy_naive_pytorch_lib.dataset import (get_dataset_label_names,
-                                           split_dataset_by_class)
+from cyy_naive_pytorch_lib.dataset import DatasetUtil
+from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
+
+from .config import get_config
 
 matplotlib.use("Agg")
 
 
 def compute_distribution(
-    dataset_name,
+    config,
     tester,
-    training_dataset,
-    hyper_gradient_dir,
     indices=None,
     prefix="whole",
 ):
-    training_set_size = len(training_dataset)
-    tester = copy.deepcopy(tester)
-    analyzer = HyperGradientAnalyzer(tester, hyper_gradient_dir)
+    training_dataset = tester.dataset_collection.get_dataset(
+        MachineLearningPhase.Training
+    )
+    training_set_size = None
+    with open(
+        os.path.join(config.hydra_dir, "training_set_size"),
+        mode="rb",
+    ) as f:
+        training_set_size = pickle.load(f)
+    analyzer = HyDRAAnalyzer(
+        tester,
+        os.path.join(config.hydra_dir, "approximation_hyper_gradient_dir"),
+        training_set_size,
+    )
+
+    if prefix == "abnormal":
+        indices = set(range(len(training_dataset))) - indices
 
     training_subset = dict()
-    for label, label_dataset in split_dataset_by_class(training_dataset).items():
+    for label, label_dataset in DatasetUtil(training_dataset).split_by_label().items():
         get_logger().info("compute label %s", label)
         training_subset[label] = set(label_dataset["indices"])
         if indices is not None:
             training_subset[label] &= set(indices)
 
     test_subset = dict()
-    for label, label_dataset in split_dataset_by_class(tester.dataset).items():
+    for label, label_dataset in DatasetUtil(tester.dataset).split_by_label().items():
         get_logger().info("compute label %s", label)
         test_subset[label] = set(label_dataset["indices"])
+
     subset_contribution_dict = analyzer.get_subset_contributions(
-        training_subset, test_subset, training_set_size
+        training_subset, test_subset
     )
     means = dict()
     for training_label, tmp in subset_contribution_dict.items():
@@ -59,8 +69,8 @@ def compute_distribution(
             )
 
     result_dir = os.path.join(
-        "hypergradient_distribution",
-        dataset_name,
+        "hydra_distribution",
+        config.dataset_name,
     )
     os.makedirs(
         result_dir,
@@ -68,9 +78,9 @@ def compute_distribution(
     )
 
     if prefix:
-        prefix = os.path.basename(hyper_gradient_dir) + "_" + prefix
+        prefix = os.path.basename(config.hydra_dir) + "_" + prefix
     else:
-        prefix = os.path.basename(hyper_gradient_dir)
+        prefix = os.path.basename(config.hydra_dir)
     with open(
         os.path.join(
             result_dir,
@@ -119,8 +129,8 @@ def compute_distribution(
     mean_array = mean_array - mean_array.mean()
     mean_array = mean_array / mean_array.std()
 
-    label_list = get_dataset_label_names(args.dataset_name)
-    if args.task_name == "MNIST":
+    label_list = tester.dataset_collection.get_label_names()
+    if config.dataset_name == "MNIST":
         label_list = [" " * 18 + str(a) for a in label_list]
     mean_array = normalize_for_heatmap(mean_array)
 
@@ -139,52 +149,34 @@ def compute_distribution(
 
 
 if __name__ == "__main__":
-    parser = add_arguments_to_parser()
-    args = get_parsed_args(parser)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--hydra_dir", type=str, required=True)
+    config = get_config(parser)
 
     set_file_handler(
         os.path.join(
             "log",
-            "hypergradient_distribution",
-            args.dataset_name,
-            args.model_name,
+            "hydra_distribution",
+            config.dataset_name,
+            config.model_name,
             "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
         )
     )
-    training_dataset = get_training_dataset(args)
-    tester = get_inferencer_from_args(args)
-    if args.randomized_label_map_path is None:
-        compute_distribution(
-            args.dataset_name,
-            tester,
-            training_dataset,
-            args.hyper_gradient_dir,
-        )
+    tester = config.create_inferencer()
+    if config.training_dataset_label_map_path is None:
+        compute_distribution(config, tester)
         sys.exit(0)
 
-    with open(args.randomized_label_map_path, "r") as f:
-        randomized_label_map = dict()
-        for k, v in json.load(f).items():
-            randomized_label_map[int(k)] = int(v)
-        get_logger().info(
-            "%s fake samples", len(randomized_label_map) / len(training_dataset)
+    with open(config.training_dataset_label_map_path, "r") as f:
+        randomized_label_map = json.load(f)
+
+        compute_distribution(
+            config, tester, indices=randomized_label_map.keys(), prefix="abnormal"
         )
 
         compute_distribution(
-            args.dataset_name,
+            config,
             tester,
-            training_dataset,
-            args.hyper_gradient_dir,
             indices=randomized_label_map.keys(),
-            prefix="abnormal",
-        )
-
-        compute_distribution(
-            args.dataset_name,
-            tester,
-            training_dataset,
-            args.hyper_gradient_dir,
-            indices=set(range(len(training_dataset)))
-            - set(randomized_label_map.keys()),
             prefix="normal",
         )
