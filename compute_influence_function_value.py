@@ -13,27 +13,29 @@ from config import get_config
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--hydra_root_dir", type=str, required=True)
+    parser.add_argument("--session_root_dir", type=str, required=True)
     parser.add_argument("--min_epoch", type=int)
     parser.add_argument("--max_epoch", type=int, default=1000)
     config = get_config(parser)
 
     trainer = config.create_trainer()
     inferencer = config.create_inferencer(phase=MachineLearningPhase.Test)
-    hyper_gradient_indices_path = os.path.join(
-        config.hydra_root_dir, "hyper_gradient_indices.json"
+    tracking_indices_path = os.path.join(
+        config.session_root_dir, "HyDRA", "tracking_indices.json"
     )
-    if os.path.isfile(hyper_gradient_indices_path):
+    if os.path.isfile(tracking_indices_path):
         with open(
-            hyper_gradient_indices_path,
+            tracking_indices_path,
             mode="rt",
         ) as f:
-            hyper_gradient_indices = json.load(f)
-            print("use", len(hyper_gradient_indices), "indices")
+            tracking_indices = json.load(f)
+            print("use", len(tracking_indices), "indices")
     else:
-        hyper_gradient_indices = list(range(len(trainer.dataset)))
+        tracking_indices = list(range(len(trainer.dataset)))
     for epoch in range(config.min_epoch, config.max_epoch):
-        model_path = os.path.join(config.save_dir, "model_epoch_" + str(epoch) + ".pt")
+        model_path = os.path.join(
+            config.session_root_dir, "model", "epoch_" + str(epoch) + ".pt"
+        )
         if not os.path.isfile(model_path):
             continue
         print("compute in epoch", epoch)
@@ -44,7 +46,7 @@ if __name__ == "__main__":
         inferencer.transform_dataset(lambda _: trainer.dataset)
 
         training_sample_gradients = get_sample_gradient_dict(
-            inferencer, hyper_gradient_indices
+            inferencer, tracking_indices
         )
 
         contributions = compute_classic_influence_function(
