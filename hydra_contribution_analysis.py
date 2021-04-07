@@ -7,7 +7,8 @@ import os
 import pickle
 
 import torch
-from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_order
+from cyy_naive_lib.algorithm.mapping_op import (
+    change_mapping_keys, get_mapping_values_by_key_order)
 from cyy_naive_lib.log import get_logger
 from cyy_naive_pytorch_lib.algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
 from cyy_naive_pytorch_lib.dataset import DatasetUtil, sub_dataset
@@ -16,8 +17,8 @@ from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
 from config import get_config
 
 
-def get_instance_statistics(validator, instance_dataset) -> dict:
-    tmp_validator = copy.deepcopy(validator)
+def get_instance_statistics(tester, instance_dataset) -> dict:
+    tmp_validator = copy.deepcopy(tester)
     tmp_validator.dataset_collection.transform_dataset(
         MachineLearningPhase.Test, lambda _: instance_dataset
     )
@@ -25,9 +26,9 @@ def get_instance_statistics(validator, instance_dataset) -> dict:
     return tmp_validator.prob_metric.get_prob(1)[0]
 
 
-def save_training_image(save_dir, validator, contribution, training_dataset, index):
+def save_training_image(save_dir, tester, contribution, training_dataset, index):
     sample_dataset = sub_dataset(training_dataset, [index])
-    max_prob_index, max_prob = get_instance_statistics(validator, sample_dataset)
+    max_prob_index, max_prob = get_instance_statistics(tester, sample_dataset)
 
     DatasetUtil(sample_dataset).save_sample_image(
         0,
@@ -44,9 +45,9 @@ def save_training_image(save_dir, validator, contribution, training_dataset, ind
     )
 
 
-def save_test_image(save_dir, validator, contribution, index):
-    sample_dataset = sub_dataset(validator.dataset, [index])
-    max_prob_index, max_prob = get_instance_statistics(validator, sample_dataset)
+def save_test_image(save_dir, tester, contribution, index):
+    sample_dataset = sub_dataset(tester.dataset, [index])
+    max_prob_index, max_prob = get_instance_statistics(tester, sample_dataset)
 
     DatasetUtil(sample_dataset).save_sample_image(
         0,
@@ -72,7 +73,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     trainer = config.create_trainer()
     training_dataset = trainer.dataset
-    validator = config.create_inferencer(phase=MachineLearningPhase.Test)
 
     contribution = None
     if args.sample_index is None:
@@ -82,20 +82,20 @@ if __name__ == "__main__":
         ) as f:
             contribution_dict = json.load(f)
             contribution = torch.Tensor(
-                list(get_mapping_values_by_order(contribution_dict))
+                list(get_mapping_values_by_key_order(contribution_dict))
             )
     else:
+        tester = config.create_inferencer(phase=MachineLearningPhase.Test)
         test_subset = dict()
-        for idx in range(len(validator.dataset)):
+        for idx in range(len(tester.dataset)):
             test_subset[idx] = [idx]
-        training_set_size = None
         with open(
             os.path.join(args.hydra_dir, "training_set_size"),
             mode="rb",
         ) as f:
             training_set_size = pickle.load(f)
         analyzer = HyDRAAnalyzer(
-            validator,
+            tester,
             os.path.join(args.hydra_dir, "approximation_hyper_gradient_dir"),
             training_set_size,
         )
@@ -103,8 +103,11 @@ if __name__ == "__main__":
             training_subset_dict={args.sample_index: [args.sample_index]},
             test_subset_dict=test_subset,
         )
+
+        contribution_dict = change_mapping_keys(contribution_dict, int, True)
+
         contribution = torch.Tensor(
-            list(get_mapping_values_by_order(contribution_dict[args.sample_index]))
+            list(get_mapping_values_by_key_order(contribution_dict[args.sample_index]))
         )
 
     std, mean = torch.std_mean(contribution)
@@ -133,17 +136,17 @@ if __name__ == "__main__":
         idx = idx[0]
         if args.sample_index is None:
             save_training_image(
-                analysis_result_dir, validator, contribution, training_dataset, idx
+                analysis_result_dir, tester, contribution, training_dataset, idx
             )
         else:
-            save_test_image(analysis_result_dir, validator, contribution, idx)
+            save_test_image(analysis_result_dir, tester, contribution, idx)
 
     mask = contribution < (min_contribution * args.threshold)
     for idx in mask.nonzero().tolist():
         idx = idx[0]
         if args.sample_index is None:
             save_training_image(
-                analysis_result_dir, validator, contribution, training_dataset, idx
+                analysis_result_dir, tester, contribution, training_dataset, idx
             )
         else:
-            save_test_image(analysis_result_dir, validator, contribution, idx)
+            save_test_image(analysis_result_dir, tester, contribution, idx)
