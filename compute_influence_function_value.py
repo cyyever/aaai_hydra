@@ -60,8 +60,9 @@ if __name__ == "__main__":
         )
         with open(
             os.path.join(
-                config.save_dir,
-                "influence_function_contribution_" + str(epoch) + ".json",
+                config.session_root_dir,
+                "influence_function",
+                "epoch_" + str(epoch) + ".json",
             ),
             mode="wt",
         ) as f:
