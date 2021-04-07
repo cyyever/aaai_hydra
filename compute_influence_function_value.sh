@@ -1,1 +1,1 @@
-python3 compute_classic_influence_function_for_approximation.py --dataset_name FashionMNIST --model_name LeNet5 --save_dir models/FashionMNIST/approximation_comparision/ --batch_size 1024 --min_epoch 100
+python3 compute_influence_function_value.py --dataset_name FashionMNIST --model_name LeNet5 --min_epoch 100
