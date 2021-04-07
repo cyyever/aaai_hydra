@@ -1,34 +1,27 @@
 #!/usr/bin/env python3
 
-import datetime
 import json
 import os
+import pickle
 
 import numpy as np
 import torch
-# from cyy_naive_lib.list_op import dict_to_list, change_dict_key
 from cyy_naive_lib.algorithm.mapping_op import (change_mapping_keys,
                                                 flatten_mapping)
-from cyy_naive_lib.log import get_logger, set_file_handler
-from cyy_naive_pytorch_lib.algorithm.influence_function.hyper_gradient_analyzer import \
-    HyperGradientAnalyzer
-from cyy_naive_pytorch_lib.arg_parse import (create_inferencer_from_args,
-                                             get_randomized_label_map,
-                                             get_training_dataset)
-from cyy_naive_pytorch_lib.dataset import (get_dataset_label_names,
-                                           sample_subset,
-                                           split_dataset_by_class)
+from cyy_naive_lib.log import get_logger
+from cyy_naive_pytorch_lib.algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
+from cyy_naive_pytorch_lib.dataset import (DatasetUtil,
+                                           get_dataset_label_names,
+                                           sample_subset)
 from cyy_naive_pytorch_lib.visualization import Window
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.manifold import TSNE
 
-# from tools.configuration import get_task_configuration, get_task_dataset_name
+from .config import get_config
 
 
-def compute_contribution(args, label):
-    result_dir = os.path.join(
-        "hypergradient_clustering", args.task_name, "label", str(label)
-    )
+def compute_contribution(config, training_indices, label):
+    result_dir = os.path.join(config.hydra_dir, "hydra_clustering", "label", str(label))
     os.makedirs(
         result_dir,
         exist_ok=True,
@@ -38,49 +31,37 @@ def compute_contribution(args, label):
     if os.path.isfile(os.path.join(result_dir, "contribution_dict.json")):
         with open(os.path.join(result_dir, "contribution_dict.json"), mode="rt") as f:
             contribution_dict = json.load(f)
-            contribution_dict = change_mapping_keys(
-                contribution_dict, int, True)
+            contribution_dict = change_mapping_keys(contribution_dict, int, True)
             get_logger().info("use cached dict for label %s", label)
     else:
-        training_dataset = get_training_dataset(args)
-        training_subset_indices = split_dataset_by_class(training_dataset)[label][
-            "indices"
-        ]
-
-        validator = create_inferencer_from_args(args)
+        tester = config.create_inferencer()
 
         test_subset = dict()
 
-        sample_indices = sum(
-            sample_subset(
-                validator.dataset,
-                0.1).values(),
-            [])
+        sample_indices = sum(sample_subset(tester.dataset, 0.1).values(), [])
         for index in sample_indices:
             test_subset[index] = {index}
 
-        analyzer = HyperGradientAnalyzer(
-            validator, args.hyper_gradient_dir, cache_size=args.cache_size
+        training_set_size = None
+        with open(
+            os.path.join(config.hydra_dir, "training_set_size"),
+            mode="rb",
+        ) as f:
+            training_set_size = pickle.load(f)
+
+        analyzer = HyDRAAnalyzer(
+            tester,
+            os.path.join(config.hydra_dir, "approximation_hyper_gradient_dir"),
+            training_set_size,
         )
 
         contribution_dict = analyzer.get_training_sample_contributions(
-            test_subset, training_subset_indices
+            test_subset, training_indices
         )
 
         with open(os.path.join(result_dir, "contribution_dict.json"), mode="wt") as f:
             json.dump(contribution_dict, f)
-        assert set(contribution_dict.keys()) == set(training_subset_indices)
-
-    if args.use_sign_feature:
-        get_logger().info("use sign feature")
-        for v in contribution_dict.values():
-            for k2, v2 in v.items():
-                if v2 >= 0:
-                    v[k2] = 1
-                else:
-                    v[k2] = 0
-    else:
-        get_logger().info("not use sign feature")
+        assert set(contribution_dict.keys()) == set(training_indices)
 
     contribution_matrix = flatten_mapping(contribution_dict)
     return (contribution_dict, contribution_matrix)
@@ -90,63 +71,36 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--task_name", type=str)
-    parser.add_argument("--hyper_gradient_dir", type=str)
-    parser.add_argument("--model_path", type=str)
-    parser.add_argument("--cache_size", type=int, default=1024)
-    parser.add_argument("--randomized_label_map_path", type=str)
-    parser.add_argument("--check_label", type=int)
-    parser.add_argument(
-        "--use_sign_feature",
-        action="store_true",
-        default=False)
-    args = parser.parse_args()
+    parser.add_argument("--hydra_dir", type=str, required=True)
+    config = get_config(parser)
 
-    set_file_handler(
-        os.path.join(
-            "log",
-            "hypergradient_clustering",
-            args.task_name,
-            "{date:%Y-%m-%d_%H:%M:%S}.log".format(
-                date=datetime.datetime.now()),
-        )
-    )
-    result_dir = os.path.join(
-        "hypergradient_clustering",
-        args.task_name,
-    )
+    result_dir = os.path.join(config.hydra_dir, "hydra_clustering")
     os.makedirs(
         result_dir,
         exist_ok=True,
     )
 
-    randomized_label_map = get_randomized_label_map(args)
+    randomized_label_map = config.dc_config.training_dataset_label_map
     noisy_label_dict: dict = dict()
     for k, v in randomized_label_map.items():
         if v not in noisy_label_dict:
             noisy_label_dict[v] = set()
         noisy_label_dict[v].add(int(k))
-
-    training_dataset = get_training_dataset(args)
+    dc = config.dc_config.create_dataset_collection()
 
     positive_overrates = []
     negative_overrates = []
-    for label, v in split_dataset_by_class(training_dataset).items():
-        if args.check_label is not None and label != args.check_label:
-            continue
+    for label, v in DatasetUtil(dc.get_training_dataset()).split_by_label().items():
         indices = v["indices"]
-        (contribution_dict, contribution_matrix) = compute_contribution(args, label)
+        (contribution_dict, contribution_matrix) = compute_contribution(
+            config, indices, label
+        )
         with open(
-            os.path.join(
-                result_dir,
-                "contribution_list_" +
-                str(label) +
-                ".txt"),
+            os.path.join(result_dir, "contribution_list_" + str(label) + ".txt"),
             mode="wt",
         ) as f:
             for k, v in contribution_dict.items():
-                spaced_row: str = " ".join([str(a)
-                                            for a in flatten_mapping(v)])
+                spaced_row: str = " ".join([str(a) for a in flatten_mapping(v)])
                 if k in randomized_label_map:
                     spaced_row = "fake " + spaced_row
                 else:
@@ -155,8 +109,7 @@ if __name__ == "__main__":
 
         with open(
             os.path.join(
-                result_dir, "distribution_of_contribution_list_" +
-                str(label) + ".txt"
+                result_dir, "distribution_of_contribution_list_" + str(label) + ".txt"
             ),
             mode="wt",
         ) as f:
@@ -188,16 +141,14 @@ if __name__ == "__main__":
             else:
                 is_real_label[i] = 1
 
-        dataset_name = args.dataset_name
+        dataset_name = config.dc_config.dataset_name
         title = (
             "clustering for "
             + dataset_name
             + " class "
             + get_dataset_label_names(dataset_name)[label]
         )
-        if args.use_sign_feature:
-            title += "_and_sign_feature"
-        win = Window(title=title, env=args.task_name + "_clustering")
+        win = Window(title=title, env=config.dc_config.dataset_name + "_clustering")
         win.set_opt("legend", ["correct", "fake"])
         win.set_opt("markersize", 2)
         win.plot_scatter(x=torch.from_numpy(tsne_res), y=is_real_label)
@@ -235,7 +186,7 @@ if __name__ == "__main__":
 
         get_logger().info(
             "class %s,normal_cluster len is %s,noisy_cluster len is %s",
-            get_dataset_label_names(dataset_name)[label],
+            dc.get_label_names()[label],
             len(normal_cluster),
             len(noisy_cluster),
         )
@@ -246,12 +197,10 @@ if __name__ == "__main__":
             len(noisy_labels),
         )
         positive_overrates.append(
-            len(normal_labels & normal_cluster) /
-            len(normal_labels | normal_cluster)
+            len(normal_labels & normal_cluster) / len(normal_labels | normal_cluster)
         )
         negative_overrates.append(
-            len(noisy_labels & noisy_cluster) /
-            len(noisy_labels | noisy_cluster)
+            len(noisy_labels & noisy_cluster) / len(noisy_labels | noisy_cluster)
         )
         get_logger().info(
             "class %s,overlay rate in normal_cluster is %s,noisy_cluster is %s",
