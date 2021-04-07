@@ -157,26 +157,24 @@ if __name__ == "__main__":
         os.path.join(
             "log",
             "hydra_distribution",
-            config.dataset_name,
+            config.dc_config.dataset_name,
             config.model_name,
             "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
         )
     )
     tester = config.create_inferencer()
-    if config.training_dataset_label_map_path is None:
+    randomized_label_map = config.dc_config.training_dataset_label_map
+    if randomized_label_map is None:
         compute_distribution(config, tester)
         sys.exit(0)
 
-    with open(config.training_dataset_label_map_path, "r") as f:
-        randomized_label_map = json.load(f)
+    compute_distribution(
+        config, tester, indices=randomized_label_map.keys(), prefix="abnormal"
+    )
 
-        compute_distribution(
-            config, tester, indices=randomized_label_map.keys(), prefix="abnormal"
-        )
-
-        compute_distribution(
-            config,
-            tester,
-            indices=randomized_label_map.keys(),
-            prefix="normal",
-        )
+    compute_distribution(
+        config,
+        tester,
+        indices=randomized_label_map.keys(),
+        prefix="normal",
+    )

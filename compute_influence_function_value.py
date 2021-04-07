@@ -53,7 +53,7 @@ if __name__ == "__main__":
             trainer,
             test_gradient,
             training_sample_gradients,
-            batch_size=config.batch_size,
+            batch_size=config.hyper_parameter_config.batch_size,
             dampling_term=0.01,
             scale=1000,
             epsilon=0.03,
