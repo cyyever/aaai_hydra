@@ -2,6 +2,7 @@
 
 import json
 import os
+import argparse
 import pickle
 
 import numpy as np
@@ -21,7 +22,7 @@ from .config import get_config
 
 
 def compute_contribution(config, training_indices, label):
-    result_dir = os.path.join(config.hydra_dir, "hydra_clustering", "label", str(label))
+    result_dir = os.path.join(config.hydra_dir, "clustering", "label", str(label))
     os.makedirs(
         result_dir,
         exist_ok=True,
@@ -68,8 +69,6 @@ def compute_contribution(config, training_indices, label):
 
 
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--hydra_dir", type=str, required=True)
     config = get_config(parser)
