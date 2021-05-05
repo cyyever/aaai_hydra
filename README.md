@@ -55,6 +55,8 @@ python3 setup.py install --user
 
 ## Citation
 
+If you find our work useful, please cite us:
+
 ```
 @article{chen2021hydra,
 title={Hydra: Hypergradient data relevance analysis for interpreting deep neural networks},
