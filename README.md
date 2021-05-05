@@ -59,9 +59,9 @@ If you find our work useful, please cite us:
 
 ```
 @article{chen2021hydra,
-title={Hydra: Hypergradient data relevance analysis for interpreting deep neural networks},
-author={Chen, Yuanyuan and Li, Boyang and Yu, Han and Wu, Pengcheng and Miao, Chunyan},
-journal={arXiv preprint arXiv:2102.02515},
-year={2021}
+  title={Hydra: Hypergradient data relevance analysis for interpreting deep neural networks},
+  author={Chen, Yuanyuan and Li, Boyang and Yu, Han and Wu, Pengcheng and Miao, Chunyan},
+  journal={arXiv preprint arXiv:2102.02515},
+  year={2021}
 }
 ```
