@@ -5,6 +5,8 @@
 This repository contains the implementation code of
 [HYDRA: Hypergradient Data Relevance Analysis for Interpreting Deep Neural Networks](https://arxiv.org/abs/2102.02515).
 
+HYDRA is a method of neural network interpretability that assesses the contribution of training data. You can play [this demo](https://cyyever.github.io/aaai_hydra) to get a feel for its power.
+
 ## Installation
 
 ### Dependency
