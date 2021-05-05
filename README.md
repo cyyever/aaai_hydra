@@ -18,7 +18,7 @@ Windows is not supported yet. You need a recent Linux distribution.
 ```
 pytorch >= 1.7
 torchvision >= v0.8.0
-gcc >= 10.2
+a C++17 compiler
 ```
 
 #### Steps to install
@@ -55,7 +55,7 @@ python3 setup.py install --user
 
 ## Citation
 
-If you find our work useful, please cite us:
+If you find our work useful, please cite it:
 
 ```
 @article{chen2021hydra,
