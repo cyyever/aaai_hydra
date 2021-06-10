@@ -11,8 +11,8 @@ import matplotlib
 import numpy
 import seaborn
 from cyy_naive_lib.log import get_logger, set_file_handler
-from cyy_naive_pytorch_lib.algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_naive_pytorch_lib.algorithm.normalization import normalize_for_heatmap
+from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
+from cyy_torch_algorithm.normalization import normalize_for_heatmap
 from cyy_naive_pytorch_lib.dataset import DatasetUtil
 from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
 

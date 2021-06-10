@@ -50,8 +50,16 @@ sudo make install
 5.
 
 ```
-git clone --recursive git@github.com:cyyever/naive_pytorch_lib.git
-cd naive_pytorch_lib
+git clone --recursive git@github.com:cyyever/torch_toolbox.git
+cd cyy_torch_toolbox
+python3 setup.py install --user
+```
+
+6.
+
+```
+git clone --recursive git@github.com:cyyever/torch_algorithm.git
+cd cyy_torch_algorithm
 python3 setup.py install --user
 ```
 

@@ -1,4 +1,4 @@
-from cyy_naive_pytorch_lib.algorithm.hydra.hydra_config import HyDRAConfig
+from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
 
 
 def get_config(parser=None) -> HyDRAConfig:

@@ -3,9 +3,9 @@ import argparse
 import json
 import os
 
-from cyy_naive_pytorch_lib.algorithm.influence_function import \
+from cyy_torch_algorithm.influence_function import \
     compute_influence_function
-from cyy_naive_pytorch_lib.algorithm.sample_gradient.sample_gradient_util import \
+from cyy_torch_algorithm.sample_gradient.sample_gradient_util import \
     get_sample_gradient_dict
 from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
 

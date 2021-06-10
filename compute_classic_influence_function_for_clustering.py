@@ -5,7 +5,7 @@ import json
 import os
 
 from cyy_naive_lib.log import get_logger, set_file_handler
-from cyy_naive_pytorch_lib.algorithm.influence_function.classic_influence_function import \
+from cyy_torch_algorithm.influence_function.classic_influence_function import \
     compute_classic_influence_function
 from cyy_naive_pytorch_lib.arg_parse import (create_inferencer_from_args,
                                              create_trainer_from_args,
