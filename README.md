@@ -31,10 +31,7 @@ a C++17 compiler
 3.
 
 ```
-git clone --recursive git@github.com:cyyever/naive_python_lib.git
-cd naive_python_lib
-pip3 install -r requirements.txt --user
-python3 setup.py install --user
+python3 -m pip install --upgrade --user git+ssh://git@github.com/cyyever/naive_python_lib.git@main
 ```
 
 4.
@@ -43,11 +40,31 @@ python3 setup.py install --user
 git clone --recursive git@github.com:cyyever/naive_cpp_lib.git
 cd naive_cpp_lib
 mkdir build && cd build
-cmake -DBUILD_TORCH=on -DBUILD_TORCH_PYTHON_BINDING=on -DBUILD_SHARED_LIBS=on ..
+cmake -DBUILD_SHARED_LIBS=on ..
 sudo make install
 ```
 
 5.
+
+```
+git clone --recursive git@github.com:cyyever/algorithm.git
+cd algorithm
+mkdir build && cd build
+cmake -DBUILD_SHARED_LIBS=on ..
+sudo make install
+```
+
+6.
+
+```
+git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
+cd torch_cpp_extension
+mkdir build && cd build
+cmake -DBUILD_SHARED_LIBS=on ..
+sudo make install
+```
+
+7.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_toolbox.git
