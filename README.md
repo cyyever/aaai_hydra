@@ -20,21 +20,26 @@ Windows is not supported yet. You need a recent Linux distribution.
 ```
 pytorch >= 1.7
 torchvision >= v0.8.0
-a C++17 compiler
+a C++20 compiler
+
 ```
 
 #### Steps to install
 
-1. Install pytorch >= 1.7 according to [the instructions](https://pytorch.org/)
-2. Install torchvision >= v0.8.0 according to [the instructions](https://github.com/pytorch/vision)
+1. Install pytorch according to [the instructions](https://pytorch.org/).
+2. Install torchvision according to [the instructions](https://github.com/pytorch/vision).
+3. Install GSL according to [the instructions](https://github.com/microsoft/GSL).
+4. Install doctest according to [the instructions](https://github.com/doctest/doctest).
+5. Install spdlog according to [the instructions](https://github.com/gabime/spdlog).
+6. Install pybind11 according to [the instructions](https://github.com/pybind/pybind11).
 
-3.
+7.
 
 ```
 python3 -m pip install --upgrade --user git+ssh://git@github.com/cyyever/naive_python_lib.git@main
 ```
 
-4.
+8.
 
 ```
 git clone --recursive git@github.com:cyyever/naive_cpp_lib.git
@@ -44,7 +49,7 @@ cmake -DBUILD_SHARED_LIBS=on ..
 sudo make install
 ```
 
-5.
+9.
 
 ```
 git clone --recursive git@github.com:cyyever/algorithm.git
@@ -54,7 +59,7 @@ cmake -DBUILD_SHARED_LIBS=on ..
 sudo make install
 ```
 
-6.
+10.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
@@ -64,7 +69,7 @@ cmake -DBUILD_SHARED_LIBS=on ..
 sudo make install
 ```
 
-7.
+11.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_toolbox.git
@@ -72,7 +77,7 @@ cd cyy_torch_toolbox
 python3 setup.py install --user
 ```
 
-6.
+12.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_algorithm.git
