@@ -67,6 +67,7 @@ cd torch_cpp_extension
 mkdir build && cd build
 cmake -DBUILD_SHARED_LIBS=on ..
 sudo make install
+env cmake_build_dir=build python3 setup.py install --user
 ```
 
 11.
