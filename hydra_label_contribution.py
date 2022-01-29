@@ -11,12 +11,11 @@ import matplotlib
 import numpy
 import seaborn
 from cyy_naive_lib.log import get_logger, set_file_handler
-from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_torch_algorithm.normalization import normalize_for_heatmap
 from cyy_naive_pytorch_lib.dataset import DatasetUtil
 from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
-
-from .config import get_config
+from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
+from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
+from cyy_torch_algorithm.normalization import normalize_for_heatmap
 
 matplotlib.use("Agg")
 
@@ -151,7 +150,8 @@ def compute_distribution(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--hydra_dir", type=str, required=True)
-    config = get_config(parser)
+    config = HyDRAConfig()
+    config.load_args(parser)
 
     set_file_handler(
         os.path.join(
