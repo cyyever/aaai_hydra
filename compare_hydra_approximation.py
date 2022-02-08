@@ -5,13 +5,12 @@ import os
 
 import torch
 from cyy_naive_lib.log import set_file_handler
-from cyy_torch_toolbox.callback import Callback
+from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
+from cyy_torch_toolbox.hook import Hook
 from cyy_torch_toolbox.ml_type import MachineLearningPhase
 
-from config import get_config
 
-
-class ComparisonCallback(Callback):
+class ComparisonHook(Hook):
     def __init__(self, hydra_cb, **kwargs):
         super().__init__(**kwargs)
         self.hydra_cb = hydra_cb
@@ -22,11 +21,11 @@ class ComparisonCallback(Callback):
         save_dir = os.path.join(self.hydra_cb.save_dir, "approximation_comparision")
         if epoch % 4 != 0 and trainer.hyper_parameter.epoch != epoch:
             return
-        hyper_gradient_distance = dict()
+        hyper_gradient_distance = {}
         training_set_size = len(trainer.dataset)
         tester = trainer.get_inferencer(phase=MachineLearningPhase.Test)
-        hessian_hyper_gradient_contribution = dict()
-        approximation_hyper_gradient_contribution = dict()
+        hessian_hyper_gradient_contribution = {}
+        approximation_hyper_gradient_contribution = {}
         test_gradient = tester.get_gradient()
 
         def compute_approximation_contribution(index, hyper_gradient):
@@ -55,6 +54,7 @@ class ComparisonCallback(Callback):
                 "approximation_distance_" + str(epoch) + ".json",
             ),
             mode="wt",
+            encoding="utf8",
         ) as f:
             json.dump(hyper_gradient_distance, f)
 
@@ -66,6 +66,7 @@ class ComparisonCallback(Callback):
                 + ".json",
             ),
             mode="wt",
+            encoding="utf8",
         ) as f:
             json.dump(approximation_hyper_gradient_contribution, f)
         with open(
@@ -74,12 +75,14 @@ class ComparisonCallback(Callback):
                 "hessian_hyper_gradient_contribution.epoch_" + str(epoch) + ".json",
             ),
             mode="wt",
+            encoding="utf8",
         ) as f:
             json.dump(hessian_hyper_gradient_contribution, f)
 
 
 if __name__ == "__main__":
-    config = get_config()
+    config = HyDRAConfig()
+    config.load_args()
     config.use_hessian = True
     config.use_approximation = True
     set_file_handler(
@@ -92,6 +95,6 @@ if __name__ == "__main__":
         )
     )
     hydra_trainer, hydra_cb = config.create_trainer(return_hydra_callback=True)
-    cb = ComparisonCallback(hydra_cb)
+    cb = ComparisonHook(hydra_cb)
     cb.append_to_model_executor(hydra_trainer)
     hydra_trainer.train()
