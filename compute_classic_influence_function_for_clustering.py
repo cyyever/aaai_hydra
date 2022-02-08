@@ -7,13 +7,13 @@ import os
 from cyy_naive_lib.log import get_logger, set_file_handler
 from cyy_torch_algorithm.influence_function.classic_influence_function import \
     compute_classic_influence_function
-from cyy_naive_pytorch_lib.arg_parse import (create_inferencer_from_args,
+from cyy_torch_toolbox.arg_parse import (create_inferencer_from_args,
                                              create_trainer_from_args,
                                              get_parsed_args,
                                              get_training_dataset)
-from cyy_naive_pytorch_lib.dataset import (sample_subset, split_dataset,
+from cyy_torch_toolbox.dataset import (sample_subset, split_dataset,
                                            sub_dataset)
-from cyy_naive_pytorch_lib.gradient import get_dataset_gradients
+from cyy_torch_toolbox.gradient import get_dataset_gradients
 
 
 def compute_contribution(args):

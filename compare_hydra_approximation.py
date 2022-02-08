@@ -5,8 +5,8 @@ import os
 
 import torch
 from cyy_naive_lib.log import set_file_handler
-from cyy_naive_pytorch_lib.callback import Callback
-from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
+from cyy_torch_toolbox.callback import Callback
+from cyy_torch_toolbox.ml_type import MachineLearningPhase
 
 from config import get_config
 

@@ -4,7 +4,7 @@ import os
 
 import torch
 from cyy_naive_lib.algorithm.mapping_op import dict_value_by_order
-from cyy_naive_pytorch_lib.visualization import EpochWindow, Window
+from cyy_torch_toolbox.visualization import EpochWindow, Window
 from scipy import stats
 
 parser = argparse.ArgumentParser()

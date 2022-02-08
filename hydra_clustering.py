@@ -11,10 +11,10 @@ from cyy_naive_lib.algorithm.mapping_op import (change_mapping_keys,
                                                 flatten_mapping)
 from cyy_naive_lib.log import get_logger
 from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_naive_pytorch_lib.dataset import (DatasetUtil,
+from cyy_torch_toolbox.dataset import (DatasetUtil,
                                            get_dataset_label_names,
                                            sample_subset)
-from cyy_naive_pytorch_lib.visualization import Window
+from cyy_torch_toolbox.visualization import Window
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.manifold import TSNE
 

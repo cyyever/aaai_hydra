@@ -7,7 +7,7 @@ from cyy_torch_algorithm.influence_function import \
     compute_influence_function
 from cyy_torch_algorithm.sample_gradient.sample_gradient_util import \
     get_sample_gradient_dict
-from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
+from cyy_torch_toolbox.ml_type import MachineLearningPhase
 
 from config import get_config
 

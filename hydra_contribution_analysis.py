@@ -11,8 +11,8 @@ from cyy_naive_lib.algorithm.mapping_op import (
     change_mapping_keys, get_mapping_values_by_key_order)
 from cyy_naive_lib.log import get_logger
 from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_naive_pytorch_lib.dataset import DatasetUtil, sub_dataset
-from cyy_naive_pytorch_lib.ml_type import MachineLearningPhase
+from cyy_torch_toolbox.dataset import DatasetUtil, sub_dataset
+from cyy_torch_toolbox.ml_type import MachineLearningPhase
 
 from config import get_config
 

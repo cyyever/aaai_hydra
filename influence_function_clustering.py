@@ -8,7 +8,7 @@ import numpy as np
 from cyy_naive_lib.algorithm.mapping_op import (change_mapping_keys,
                                                 flatten_mapping)
 from cyy_naive_lib.log import get_logger
-from cyy_naive_pytorch_lib.dataset import DatasetUtil, get_dataset_label_names
+from cyy_torch_toolbox.dataset import DatasetUtil, get_dataset_label_names
 from sklearn.cluster import AgglomerativeClustering, KMeans
 
 from .config import get_config
