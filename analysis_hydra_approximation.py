@@ -96,6 +96,8 @@ for epoch in sorted(epoch_approximation_contributions.keys()):
 
     abs_relative_error = []
     for idx in sorted(normal_indices):
+        if contribution[idx] == 0:
+            continue
         abs_relative_error.append(
             abs(
                 (approximation_contribution[idx] - contribution[idx])

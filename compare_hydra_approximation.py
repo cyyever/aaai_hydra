@@ -29,7 +29,9 @@ if __name__ == "__main__":
         def _after_epoch(self, **kwargs):
             trainer = kwargs["model_executor"]
             epoch = kwargs["epoch"]
-            save_dir = os.path.join(hydra_hook.save_dir, "approximation_comparision")
+            save_dir = os.path.join(
+                hydra_hook.get_save_dir(trainer), "approximation_comparision"
+            )
             if epoch % 4 != 0 and trainer.hyper_parameter.epoch != epoch:
                 return
             hyper_gradient_distance = {}
