@@ -27,6 +27,8 @@ for epoch in range(1000):
 
 fig, ax = plt.subplots()
 ax.set_title("Mean approximation error")
+print(epochs)
+print(list(get_mapping_values_by_key_order(mean_error)))
 ax.plot(epochs, list(get_mapping_values_by_key_order(mean_error)), label="Mean error")
 ax.legend()
 fig.savefig("mean_error.jpg")
@@ -81,7 +83,12 @@ for epoch in sorted(epoch_approximation_contributions.keys()):
     values = []
     normal_indices = set()
     for idx in approximation_contribution.keys():
-        if approximation_contribution[idx] * contribution[idx] < 0:
+        if (
+            approximation_contribution[idx] < 0
+            and contribution[idx] >= 0
+            or approximation_contribution[idx] >= 0
+            and contribution[idx] < 0
+        ):
             values.append(contribution[idx])
         else:
             normal_indices.add(idx)
@@ -89,7 +96,6 @@ for epoch in sorted(epoch_approximation_contributions.keys()):
 
     abs_relative_error = []
     for idx in sorted(normal_indices):
-        assert approximation_contribution[idx] * contribution[idx] > 0
         abs_relative_error.append(
             abs(
                 (approximation_contribution[idx] - contribution[idx])
