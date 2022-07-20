@@ -30,9 +30,9 @@ if __name__ == "__main__":
             trainer = kwargs["model_executor"]
             epoch = kwargs["epoch"]
             save_dir = os.path.join(
-                hydra_hook.get_save_dir(trainer), "approximation_comparision"
+                os.path.join(trainer.save_dir, "HyDRA"), "approximation_comparision"
             )
-            if epoch % 4 != 0 and trainer.hyper_parameter.epoch != epoch:
+            if epoch % 2 != 0 and trainer.hyper_parameter.epoch != epoch:
                 return
             hyper_gradient_distance = {}
             training_set_size = len(trainer.dataset)
@@ -43,12 +43,14 @@ if __name__ == "__main__":
 
             def compute_approximation_contribution(index, hyper_gradient):
                 approximation_hyper_gradient_contribution[index] = (
-                    -(test_gradient @ hyper_gradient).data.item() / training_set_size
+                    -(test_gradient.cpu() @ hyper_gradient.cpu()).data.item()
+                    / training_set_size
                 )
 
             def compute_hessian_contribution(index, hyper_gradient):
                 hessian_hyper_gradient_contribution[index] = (
-                    -(test_gradient @ hyper_gradient).data.item() / training_set_size
+                    -(test_gradient.cpu() @ hyper_gradient.cpu()).data.item()
+                    / training_set_size
                 )
 
             hydra_hook.foreach_hyper_gradient(True, compute_approximation_contribution)
@@ -58,6 +60,12 @@ if __name__ == "__main__":
                 hyper_gradient_distance[index] = torch.dist(
                     approx_hyper_gradient, hessian_hyper_gredient
                 ).data.item()
+                print(
+                    index,
+                    approx_hyper_gradient,
+                    hessian_hyper_gredient,
+                    hyper_gradient_distance[index],
+                )
 
             hydra_hook.foreach_approx_and_hessian_hyper_gradient(compute_distance)
             os.makedirs(save_dir, exist_ok=True)
