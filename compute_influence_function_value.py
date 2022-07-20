@@ -3,13 +3,8 @@ import argparse
 import json
 import os
 
-from cyy_torch_algorithm.influence_function import \
-    compute_influence_function
-from cyy_torch_algorithm.sample_gradient.sample_gradient_util import \
-    get_sample_gradient_dict
-from cyy_torch_toolbox.ml_type import MachineLearningPhase
-
 from config import get_config
+from cyy_torch_algorithm.influence_function import compute_influence_function
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -19,7 +14,6 @@ if __name__ == "__main__":
     config = get_config(parser)
 
     trainer = config.create_trainer()
-    inferencer = config.create_inferencer(phase=MachineLearningPhase.Test)
     tracking_indices_path = os.path.join(
         config.session_root_dir, "HyDRA", "tracking_indices.json"
     )
@@ -40,20 +34,10 @@ if __name__ == "__main__":
             continue
         print("compute in epoch", epoch)
         trainer.load_model(model_path)
-        inferencer.load_model(model_path)
-        test_gradient = inferencer.get_gradient()
-
-        inferencer.transform_dataset(lambda _: trainer.dataset)
-
-        training_sample_gradients = get_sample_gradient_dict(
-            inferencer, tracking_indices
-        )
 
         contributions = compute_influence_function(
-            trainer,
-            test_gradient,
-            training_sample_gradients,
-            batch_size=config.hyper_parameter_config.batch_size,
+            trainer=trainer,
+            computed_indices=tracking_indices,
             dampling_term=0.01,
             scale=1000,
             epsilon=0.03,
