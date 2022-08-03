@@ -1,0 +1,9 @@
+---
+dataset_name: FashionMNIST
+model_name: LeNet5
+optimizer_name: SGD
+epoch: 20
+log_level: INFO
+cache_transforms: true
+tracking_percentage: 0.00001
+...
