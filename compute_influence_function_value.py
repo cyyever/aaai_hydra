@@ -3,15 +3,17 @@ import argparse
 import json
 import os
 
-from config import get_config
+import hydra
 from cyy_torch_algorithm.influence_function import compute_influence_function
 
+from config import global_config, load_default_config
+
 if __name__ == "__main__":
+    load_default_config()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--session_root_dir", type=str, required=True)
-    parser.add_argument("--min_epoch", type=int)
-    parser.add_argument("--max_epoch", type=int, default=1000)
-    config = get_config(parser)
+    config = global_config
 
     trainer = config.create_trainer()
     tracking_indices_path = os.path.join(
@@ -26,7 +28,7 @@ if __name__ == "__main__":
             print("use", len(tracking_indices), "indices")
     else:
         tracking_indices = list(range(len(trainer.dataset)))
-    for epoch in range(config.min_epoch, config.max_epoch):
+    for epoch in range(1000):
         model_path = os.path.join(
             config.session_root_dir, "model", "epoch_" + str(epoch) + ".pt"
         )
