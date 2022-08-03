@@ -3,13 +3,23 @@ import argparse
 import json
 import os
 
+import hydra
 from cyy_torch_algorithm.influence_function import compute_influence_function
+from cyy_torch_toolbox.default_config import DefaultConfig
 
-from config import config, load_default_config
+config = DefaultConfig()
+
+
+@hydra.main(config_path="conf", version_base=None)
+def load_config(conf):
+    global config
+    if len(conf) == 1:
+        conf = next(iter(conf.values()))
+    DefaultConfig.load_config(config, conf, check_config=True)
+
 
 if __name__ == "__main__":
-    load_default_config()
-
+    load_config()
     parser = argparse.ArgumentParser()
     parser.add_argument("--session_root_dir", type=str, required=True)
 
