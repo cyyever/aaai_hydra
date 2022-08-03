@@ -36,8 +36,8 @@ if __name__ == "__main__":
         trainer.load_model(model_path)
 
         contributions = compute_influence_function(
-            trainer,
-            tracking_indices,
+            trainer=trainer,
+            computed_indices=tracking_indices,
         )
         with open(
             os.path.join(

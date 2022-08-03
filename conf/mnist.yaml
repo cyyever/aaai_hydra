@@ -1,0 +1,11 @@
+---
+dataset_name: MNIST
+model_name: LeNet5
+optimizer_name: SGD
+epoch: 10
+use_amp: true
+log_level: INFO
+cache_transforms: true
+use_amp: true
+tracking_percentage: 0.00001
+...
