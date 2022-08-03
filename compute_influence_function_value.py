@@ -3,17 +3,15 @@ import argparse
 import json
 import os
 
-import hydra
 from cyy_torch_algorithm.influence_function import compute_influence_function
 
-from config import global_config, load_default_config
+from config import config, load_default_config
 
 if __name__ == "__main__":
     load_default_config()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--session_root_dir", type=str, required=True)
-    config = global_config
 
     trainer = config.create_trainer()
     tracking_indices_path = os.path.join(
