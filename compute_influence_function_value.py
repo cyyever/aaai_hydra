@@ -4,7 +4,8 @@ import json
 import os
 
 import hydra
-from cyy_torch_algorithm.influence_function import compute_influence_function
+from cyy_torch_algorithm.influence_function_family.influence_function import \
+    compute_influence_function
 from cyy_torch_toolbox.default_config import DefaultConfig
 
 config = DefaultConfig()
@@ -55,6 +56,7 @@ if __name__ == "__main__":
                 "influence_function",
                 "epoch_" + str(epoch) + ".json",
             ),
+            encoding="utf8",
             mode="wt",
         ) as f:
             json.dump(contributions, f)
