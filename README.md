@@ -13,7 +13,7 @@ HYDRA is a method of neural network interpretability that assesses the contribut
 
 #### Supported Operating Systems
 
-Windows is not supported yet. You need a recent Linux distribution.
+Linux and Windows should work for recent versions of pytorch.
 
 #### Software dependency
 
@@ -27,19 +27,18 @@ a C++20 compiler
 #### Steps to install
 
 1. Install pytorch according to [the instructions](https://pytorch.org/).
-2. Install torchvision according to [the instructions](https://github.com/pytorch/vision).
-3. Install GSL according to [the instructions](https://github.com/microsoft/GSL).
-4. Install doctest according to [the instructions](https://github.com/doctest/doctest).
-5. Install spdlog according to [the instructions](https://github.com/gabime/spdlog).
-6. Install pybind11 according to [the instructions](https://github.com/pybind/pybind11).
+2. Install functorch according to [the instructions](https://pytorch.org/functorch/stable/install.html).
+3. Install torchvision according to [the instructions](https://github.com/pytorch/vision).
+4. Install spdlog according to [the instructions](https://github.com/gabime/spdlog).
+5. Install pybind11 according to [the instructions](https://github.com/pybind/pybind11).
 
-7.
+6.
 
 ```
 python3 -m pip install --upgrade --user git+ssh://git@github.com/cyyever/naive_python_lib.git@main
 ```
 
-8.
+7.
 
 ```
 git clone --recursive git@github.com:cyyever/naive_cpp_lib.git
@@ -49,17 +48,7 @@ cmake -DBUILD_SHARED_LIBS=on ..
 sudo make install
 ```
 
-9.
-
-```
-git clone --recursive git@github.com:cyyever/algorithm.git
-cd algorithm
-mkdir build && cd build
-cmake -DBUILD_SHARED_LIBS=on ..
-sudo make install
-```
-
-10.
+8.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
@@ -70,7 +59,7 @@ sudo make install
 env cmake_build_dir=build python3 setup.py install --user
 ```
 
-11.
+9.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_toolbox.git
@@ -78,7 +67,7 @@ cd cyy_torch_toolbox
 python3 setup.py install --user
 ```
 
-12.
+10.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_algorithm.git
