@@ -4,10 +4,10 @@ import os
 import torch
 from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_key_order
 from cyy_naive_lib.log import get_logger
-from cyy_torch_toolbox.dataset import sub_dataset
+from cyy_torch_toolbox.dataset import sample_dataset
 from cyy_torch_toolbox.inferencer import Inferencer
 from cyy_torch_toolbox.ml_type import MachineLearningPhase
-from cyy_torch_toolbox.trainer import Trainer
+from cyy_torch_toolbox.model_executor import ModelExecutor
 
 
 def analysis_contribution(
@@ -49,24 +49,26 @@ def get_instance_statistics(tester: Inferencer, instance_dataset) -> dict:
     return tester.prob_metric.get_prob(1)[0]
 
 
-def save_training_image(
-    save_dir: str, trainer: Trainer, contribution: dict, index: int
+def save_image(
+    save_dir: str, model_executor: ModelExecutor, contribution: dict, index: int
 ) -> None:
-    sample_dataset = sub_dataset(trainer.dataset, [index])
-    prob_index, prob = get_instance_statistics(
-        trainer.get_inferencer(phase=MachineLearningPhase.Test), sample_dataset
-    )
+    sample_dataset = sample_dataset(model_executor.dataset, index)
+    tester = model_executor
+    if hasattr(model_executor, "get_inferencer"):
+        tester = model_executor.get_inferencer(phase=MachineLearningPhase.Test)
 
-    trainer.dataset_util.save_sample_image(
+    prob_index, prob = get_instance_statistics(tester, sample_dataset)
+
+    model_executor.dataset_util.save_sample_image(
         index=index,
         path=os.path.join(
             save_dir,
             "index_{}_contribution_{}_predicted_class_{}_prob_{}_real_class_{}.jpg".format(
                 index,
                 contribution[index],
-                trainer.dataset_util.get_label_names()[prob_index],
+                model_executor.dataset_util.get_label_names()[prob_index],
                 prob,
-                trainer.dataset_util.get_label_names()[sample_dataset[0][1]],
+                model_executor.dataset_util.get_label_names()[sample_dataset[0][1]],
             ),
         ),
     )
