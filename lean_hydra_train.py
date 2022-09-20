@@ -30,4 +30,4 @@ if __name__ == "__main__":
     lean_hydra_trainer = config.create_deterministic_trainer()
     lean_hydra_trainer.train()
     lean_hydra_trainer, hook, test_gradient = config.recreate_trainer_and_hook()
-    lean_hydra_trainer.train()
+    lean_hydra_trainer.train(save_last_model=True)

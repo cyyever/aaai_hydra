@@ -43,7 +43,7 @@ def analysis_contribution(
 def get_instance_statistics(tester: Inferencer, instance_dataset) -> dict:
     tester = copy.deepcopy(tester)
     tester.dataset_collection.transform_dataset(
-        MachineLearningPhase.Test, lambda _: instance_dataset
+        MachineLearningPhase.Test, lambda *args: instance_dataset
     )
     tester.inference(sample_prob=True)
     return tester.prob_metric.get_prob(1)[0]
@@ -52,15 +52,15 @@ def get_instance_statistics(tester: Inferencer, instance_dataset) -> dict:
 def save_image(
     save_dir: str, model_executor: ModelExecutor, contribution: dict, index: int
 ) -> None:
-    sample_dataset = sample_dataset(model_executor.dataset, index)
+    dataset = sample_dataset(model_executor.dataset, index)
     tester = model_executor
     if hasattr(model_executor, "get_inferencer"):
         tester = model_executor.get_inferencer(phase=MachineLearningPhase.Test)
 
-    prob_index, prob = get_instance_statistics(tester, sample_dataset)
+    prob_index, prob = get_instance_statistics(tester, dataset)
 
     model_executor.dataset_util.save_sample_image(
-        index=index,
+        index,
         path=os.path.join(
             save_dir,
             "index_{}_contribution_{}_predicted_class_{}_prob_{}_real_class_{}.jpg".format(
@@ -68,7 +68,7 @@ def save_image(
                 contribution[index],
                 model_executor.dataset_util.get_label_names()[prob_index],
                 prob,
-                model_executor.dataset_util.get_label_names()[sample_dataset[0][1]],
+                model_executor.dataset_util.get_label_names()[dataset[0][1]],
             ),
         ),
     )

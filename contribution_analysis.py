@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import argparse
 import json
 
 import hydra
@@ -24,9 +23,6 @@ def load_config(conf):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--contribution_path", type=str, required=True)
-    parser.add_argument("--threshold", type=float)
     load_config()
     trainer = config.create_trainer()
 
@@ -43,24 +39,3 @@ if __name__ == "__main__":
 
     for k in negative_contributions:
         save_image(".", trainer, negative_contributions, index=k)
-    # analysis_result_dir = os.path.join(args.hydra_dir, "hydra_analysis_result")
-    # if args.sample_index is not None:
-    #     analysis_result_dir = os.path.join(
-    #         analysis_result_dir, "sample_" + str(args.sample_index)
-    #     )
-
-    # mask = contribution > (max_contribution * args.threshold)
-    # for idx in mask.nonzero().tolist():
-    #     idx = idx[0]
-    #     if args.sample_index is None:
-    #         save_training_image(
-    #             analysis_result_dir, tester, contribution, training_dataset, idx
-    #         )
-
-    # mask = contribution < (min_contribution * args.threshold)
-    # for idx in mask.nonzero().tolist():
-    #     idx = idx[0]
-    #     if args.sample_index is None:
-    #         save_training_image(
-    #             analysis_result_dir, tester, contribution, training_dataset, idx
-    #         )
