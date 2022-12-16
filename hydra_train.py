@@ -3,8 +3,8 @@ import datetime
 import os
 
 import hydra
+from cyy_ml_if.hydra.hydra_config import HyDRAConfig
 from cyy_naive_lib.log import set_file_handler
-from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
 
 config = HyDRAConfig()
 
