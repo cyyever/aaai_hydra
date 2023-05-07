@@ -4,8 +4,8 @@ import json
 import os
 
 import torch
+from cyy_ml_if.hydra.hydra_config import HyDRAConfig
 from cyy_naive_lib.log import set_file_handler
-from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
 from cyy_torch_toolbox.hook import Hook
 from cyy_torch_toolbox.ml_type import MachineLearningPhase
 
@@ -27,10 +27,10 @@ if __name__ == "__main__":
 
     class ComparisonHook(Hook):
         def _after_epoch(self, **kwargs):
-            trainer = kwargs["model_executor"]
+            trainer = kwargs["executor"]
             epoch = kwargs["epoch"]
             save_dir = os.path.join(
-                os.path.join(trainer.save_dir, "HyDRA"), "approximation_comparision"
+                trainer.save_dir, "HyDRA", "approximation_comparision"
             )
             if epoch % 2 != 0 and trainer.hyper_parameter.epoch != epoch:
                 return

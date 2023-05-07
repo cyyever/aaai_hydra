@@ -4,10 +4,10 @@ import os
 import torch
 from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_key_order
 from cyy_naive_lib.log import get_logger
-from cyy_torch_toolbox.dataset import sample_dataset
+from cyy_torch_toolbox.dataset import subset_dp
+from cyy_torch_toolbox.executor import Executor
 from cyy_torch_toolbox.inferencer import Inferencer
 from cyy_torch_toolbox.ml_type import MachineLearningPhase
-from cyy_torch_toolbox.model_executor import ModelExecutor
 
 
 def analysis_contribution(
@@ -50,25 +50,25 @@ def get_instance_statistics(tester: Inferencer, instance_dataset) -> dict:
 
 
 def save_image(
-    save_dir: str, model_executor: ModelExecutor, contribution: dict, index: int
+    save_dir: str, executor: Executor, contribution: dict, index: int
 ) -> None:
-    dataset = sample_dataset(model_executor.dataset, index)
-    tester = model_executor
-    if hasattr(model_executor, "get_inferencer"):
-        tester = model_executor.get_inferencer(phase=MachineLearningPhase.Test)
+    dataset = subset_dp(executor.dataset, [index])
+    tester = executor
+    if hasattr(executor, "get_inferencer"):
+        tester = executor.get_inferencer(phase=MachineLearningPhase.Test)
 
     prob_index, prob = get_instance_statistics(tester, dataset)
 
-    model_executor.dataset_util.save_sample_image(
+    executor.dataset_util.save_sample_image(
         index,
         path=os.path.join(
             save_dir,
             "index_{}_contribution_{}_predicted_class_{}_prob_{}_real_class_{}.jpg".format(
                 index,
                 contribution[index],
-                model_executor.dataset_util.get_label_names()[prob_index],
+                executor.dataset_util.get_label_names()[prob_index],
                 prob,
-                model_executor.dataset_util.get_label_names()[dataset[0][1]],
+                executor.dataset_util.get_label_names()[dataset[0][1]],
             ),
         ),
     )
