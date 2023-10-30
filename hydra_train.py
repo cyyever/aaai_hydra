@@ -3,8 +3,8 @@ import datetime
 import os
 
 import hydra
-from cyy_ml_if.hydra.hydra_config import HyDRAConfig
-from cyy_naive_lib.log import set_file_handler
+from cyy_naive_lib.log import add_file_handler
+from cyy_torch_xai.hydra.hydra_config import HyDRAConfig
 
 config = HyDRAConfig()
 
@@ -19,7 +19,7 @@ def load_config(conf):
 
 if __name__ == "__main__":
     load_config()
-    set_file_handler(
+    add_file_handler(
         os.path.join(
             "log",
             "hydra",

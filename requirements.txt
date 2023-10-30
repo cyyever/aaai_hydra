@@ -5,4 +5,4 @@ torchtext
 torchvision
 git+ssh://git@github.com/cyyever/torch_toolbox.git@main#egg=cyy_torch_toolbox
 git+ssh://git@github.com/cyyever/torch_algorithm.git@main#egg=cyy_torch_algorithm
-git+ssh://git@github.com/cyyever/ML_influence_function_family.git@main#egg=cyy_ml_if
+git+ssh://git@github.com/cyyever/torch_XAI.git@main#egg=cyy_torch_xai

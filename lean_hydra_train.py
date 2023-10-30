@@ -3,8 +3,8 @@ import datetime
 import os
 
 import hydra
-from cyy_naive_lib.log import set_file_handler
-from cyy_torch_algorithm.lean_hydra.lean_hydra_config import LeanHyDRAConfig
+from cyy_naive_lib.log import add_file_handler
+from cyy_torch_xai.lean_hydra.lean_hydra_config import LeanHyDRAConfig
 
 config = LeanHyDRAConfig()
 
@@ -19,7 +19,7 @@ def load_config(conf):
 
 if __name__ == "__main__":
     load_config()
-    set_file_handler(
+    add_file_handler(
         os.path.join(
             "log",
             config.dc_config.dataset_name,
