@@ -18,37 +18,13 @@ Linux and Windows should work for recent versions of pytorch.
 #### Software dependency
 
 ```
-pytorch >= 1.7
-torchvision >= v0.8.0
+pytorch >= 2.0
 a C++20 compiler
-
 ```
 
 #### Steps to install
 
-1. Install pytorch according to [the instructions](https://pytorch.org/).
-2. Install functorch according to [the instructions](https://pytorch.org/functorch/stable/install.html).
-3. Install torchvision according to [the instructions](https://github.com/pytorch/vision).
-4. Install spdlog according to [the instructions](https://github.com/gabime/spdlog).
-5. Install pybind11 according to [the instructions](https://github.com/pybind/pybind11).
-
-6.
-
-```
-python3 -m pip install --upgrade --user git+ssh://git@github.com/cyyever/naive_python_lib.git@main
-```
-
-7.
-
-```
-git clone --recursive git@github.com:cyyever/naive_cpp_lib.git
-cd naive_cpp_lib
-mkdir build && cd build
-cmake -DBUILD_SHARED_LIBS=on ..
-sudo make install
-```
-
-8.
+1. Install a Pytorch extension for storing tensors.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
@@ -59,20 +35,10 @@ sudo make install
 env cmake_build_dir=build python3 setup.py install --user
 ```
 
-9.
+2.
 
 ```
-git clone --recursive git@github.com:cyyever/torch_toolbox.git
-cd cyy_torch_toolbox
-python3 setup.py install --user
-```
-
-10.
-
-```
-git clone --recursive git@github.com:cyyever/torch_algorithm.git
-cd cyy_torch_algorithm
-python3 setup.py install --user
+pip3 install -r requirements.txt --user
 ```
 
 ## Citation
