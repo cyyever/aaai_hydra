@@ -13,18 +13,26 @@ HYDRA is a method of neural network interpretability that assesses the contribut
 
 #### Supported Operating Systems
 
-Linux and Windows should work for recent versions of pytorch.
+Linux and Windows should work for recent versions of PyTorch.
 
 #### Software dependency
 
 ```
-pytorch >= 2.0
-a C++20 compiler
+PyTorch >= 2.1
+A C++20 compiler
 ```
 
 #### Steps to install
 
-1. Install a Pytorch extension for storing tensors.
+Here it's assumed that pip is used as the package manager.
+
+1. Install PyTorch
+
+```
+pip3 install torch --user
+```
+
+2. Install a PyTorch extension for storing tensors.
 
 ```
 git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
@@ -35,7 +43,7 @@ sudo make install
 env cmake_build_dir=build python3 setup.py install --user
 ```
 
-2.
+3. Install the dependent libraries.
 
 ```
 pip3 install -r requirements.txt --user
