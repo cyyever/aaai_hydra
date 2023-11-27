@@ -4,6 +4,5 @@ model_name: densenet40
 optimizer_name: SGD
 epoch: 150
 log_level: INFO
-cache_transforms: true
+cache_transforms: cpu
 tracking_percentage: 0.00001
-...
