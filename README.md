@@ -39,7 +39,8 @@ git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
 cd torch_cpp_extension
 mkdir build && cd build
 cmake -DBUILD_SHARED_LIBS=on ..
-sudo make install
+cmake --build . --config release
+cd ..
 env cmake_build_dir=build python3 setup.py install --user
 ```
 
