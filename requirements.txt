@@ -9,6 +9,4 @@ omegaconf
 torch>=2.0
 torchdata
 torchmetrics
-torchtext
 torchvision
-transformers
