@@ -28,5 +28,5 @@ if __name__ == "__main__":
             "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
         )
     )
-    hydra_trainer = config.create_trainer()
+    hydra_trainer = config.create_trainer()["trainer"]
     hydra_trainer.train()
