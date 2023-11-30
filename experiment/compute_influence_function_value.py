@@ -4,11 +4,10 @@ import json
 import os
 
 import hydra
-from cyy_torch_algorithm.influence_function_family.influence_function import \
-    compute_influence_function
-from cyy_torch_toolbox.default_config import DefaultConfig
+from cyy_torch_toolbox.default_config import Config
+from cyy_torch_xai.influence_function import compute_influence_function
 
-config = DefaultConfig()
+config = Config()
 
 
 @hydra.main(config_path="conf", version_base=None)
@@ -16,7 +15,7 @@ def load_config(conf):
     global config
     if len(conf) == 1:
         conf = next(iter(conf.values()))
-    DefaultConfig.load_config(config, conf, check_config=True)
+    Config.load_config(config, conf, check_config=True)
 
 
 if __name__ == "__main__":
