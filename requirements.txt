@@ -6,6 +6,5 @@ hydra-core
 nvidia-ml-py
 omegaconf
 torch>=2.0
-torchdata
 torchmetrics
 torchvision
