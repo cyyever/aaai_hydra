@@ -4,7 +4,8 @@ model_name: LeNet5
 optimizer_name: SGD
 epoch: 20
 log_level: INFO
-use_hessian: true
+use_hessian: false
+use_amp: false
 learning_rate: 0.01
 cache_transforms: cpu
-tracking_percentage: 0.00001
+tracking_percentage: 0.01
