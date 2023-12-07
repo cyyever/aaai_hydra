@@ -4,6 +4,7 @@ import os
 import hydra
 from cyy_naive_lib.log import add_file_handler
 from cyy_torch_xai.lean_hydra.lean_hydra_config import LeanHyDRAConfig
+import cyy_torch_vision
 
 config = LeanHyDRAConfig()
 

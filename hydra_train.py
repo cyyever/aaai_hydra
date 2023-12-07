@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
 import datetime
 import os
 
 import hydra
 from cyy_naive_lib.log import add_file_handler
 from cyy_torch_xai.hydra.hydra_config import HyDRAConfig
+import cyy_torch_vision
 
 config = HyDRAConfig()
 
