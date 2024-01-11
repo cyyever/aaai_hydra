@@ -32,19 +32,7 @@ Here it's assumed that pip is used as the package manager.
 pip3 install torch --user
 ```
 
-2. Install a PyTorch extension for storing tensors.
-
-```
-git clone --recursive git@github.com:cyyever/torch_cpp_extension.git
-cd torch_cpp_extension
-mkdir build && cd build
-cmake -DBUILD_SHARED_LIBS=on -DBUILD_TESTING=off ..
-cmake --build . --config release
-cd ..
-env cmake_build_dir=build python3 setup.py install --user
-```
-
-3. Install the dependent libraries.
+2. Install the dependent libraries.
 
 ```
 pip3 install -r requirements.txt --user
