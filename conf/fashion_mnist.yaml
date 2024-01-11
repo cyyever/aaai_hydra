@@ -6,5 +6,4 @@ epoch: 20
 log_level: INFO
 use_hessian: false
 use_amp: false
-cache_transforms: cpu
 tracking_percentage: 0.001
