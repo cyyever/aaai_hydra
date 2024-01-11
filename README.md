@@ -13,29 +13,28 @@ HYDRA is a method of neural network interpretability that assesses the contribut
 
 #### Supported Operating Systems
 
-Linux and Windows should work for recent versions of PyTorch.
+Linux and Windows should work.
 
 #### Software dependency
 
 ```
 PyTorch >= 2.1
-A C++20 compiler
+A C++20 compiler to build a PyTorch extension
 ```
 
-#### Steps to install
+#### Install
 
 Here it's assumed that pip is used as the package manager.
 
-1. Install PyTorch
-
-```
-pip3 install torch --user
-```
-
-2. Install the dependent libraries.
+1. Install the dependent libraries:
 
 ```
 pip3 install -r requirements.txt --user
+```
+
+## Test
+```
+bash hydra_train.sh
 ```
 
 ## Citation
