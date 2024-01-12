@@ -8,5 +8,5 @@ git+https://git@github.com/cyyever/naive_python_lib.git@main#egg=cyy_naive_lib
 git+https://git@github.com/cyyever/torch_algorithm.git@main#egg=cyy_torch_algorithm
 git+https://git@github.com/cyyever/torch_toolbox.git@main#egg=cyy_torch_toolbox
 git+https://git@github.com/cyyever/torch_vision.git@main#egg=cyy_torch_vision
-git+https://git@github.com/cyyever/torch_cpp_extension.git@main#egg=cyy_torch_cpp_extension
+git+ssh://git@github.com/cyyever/torch_cpp_extension.git@main#egg=cyy_torch_cpp_extension
 git+https://git@github.com/cyyever/torch_XAI.git@main#egg=cyy_torch_xai
