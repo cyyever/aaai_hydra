@@ -11,7 +11,7 @@ import matplotlib
 import numpy
 import seaborn
 from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_key_order
-from cyy_naive_lib.log import get_logger, set_file_handler
+from cyy_naive_lib.log import log_info, set_file_handler
 from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
 from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
 from cyy_torch_algorithm.normalization import normalize_for_heatmap
@@ -47,7 +47,7 @@ def compute_distribution(
         MachineLearningPhase.Training
     )
     for label, label_indices in dataset_util.label_sample_dict.items():
-        get_logger().info("compute label %s", label)
+        log_info("compute label %s", label)
         training_subset[label] = set(label_indices)
         if indices is not None:
             training_subset[label] &= set(indices)
@@ -57,7 +57,7 @@ def compute_distribution(
         MachineLearningPhase.Test
     )
     for label, label_dataset in dataset_util.label_sample_dict.items():
-        get_logger().info("compute label %s", label)
+        log_info("compute label %s", label)
         test_subset[label] = set(label_dataset)
 
     subset_contribution_dict = analyzer.get_subset_contributions(

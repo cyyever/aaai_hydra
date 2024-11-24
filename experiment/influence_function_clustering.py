@@ -5,9 +5,8 @@ import json
 import os
 
 import numpy as np
-from cyy_naive_lib.algorithm.mapping_op import (change_mapping_keys,
-                                                flatten_mapping)
-from cyy_naive_lib.log import get_logger
+from cyy_naive_lib.algorithm.mapping_op import change_mapping_keys, flatten_mapping
+from cyy_naive_lib.log import log_info
 from cyy_torch_toolbox.dataset import DatasetUtil, get_dataset_label_names
 from sklearn.cluster import AgglomerativeClustering, KMeans
 
@@ -61,7 +60,7 @@ if __name__ == "__main__":
             config, indices, label
         )
 
-        get_logger().info("get contribution_matrix for label %s", label)
+        log_info("get contribution_matrix for label %s", label)
         contribution_array = np.array(contribution_matrix)
         dataset_name = config.dc_config.dataset_name
         if dataset_name == "MNIST":
@@ -89,13 +88,13 @@ if __name__ == "__main__":
             normal_cluster = clusters[1]
             noisy_cluster = clusters[0]
 
-        get_logger().info(
+        log_info(
             "class %s,normal_cluster len is %s,noisy_cluster len is %s",
             get_dataset_label_names(dataset_name)[label],
             len(normal_cluster),
             len(noisy_cluster),
         )
-        get_logger().info(
+        log_info(
             "class %s,normal_labels len is %s,noisy_labels len is %s",
             get_dataset_label_names(dataset_name)[label],
             len(normal_labels),
@@ -107,14 +106,14 @@ if __name__ == "__main__":
         negative_overrates.append(
             len(noisy_labels & noisy_cluster) / len(noisy_labels | noisy_cluster)
         )
-        get_logger().info(
+        log_info(
             "class %s,overlay rate in normal_cluster is %s,noisy_cluster is %s",
             get_dataset_label_names(dataset_name)[label],
             positive_overrates[-1],
             negative_overrates[-1],
         )
 
-    get_logger().info(
+    log_info(
         "average overlay rate in normal_cluster is %s,noisy_cluster is %s",
         np.mean(positive_overrates),
         np.mean(negative_overrates),

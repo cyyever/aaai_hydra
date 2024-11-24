@@ -7,13 +7,14 @@ import pickle
 
 import numpy as np
 import torch
-from cyy_naive_lib.algorithm.mapping_op import (change_mapping_keys,
-                                                flatten_mapping)
-from cyy_naive_lib.log import get_logger
+from cyy_naive_lib.algorithm.mapping_op import change_mapping_keys, flatten_mapping
+from cyy_naive_lib.log import log_info
 from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_torch_toolbox.dataset import (DatasetUtil,
-                                           get_dataset_label_names,
-                                           sample_subset)
+from cyy_torch_toolbox.dataset import (
+    DatasetUtil,
+    get_dataset_label_names,
+    sample_subset,
+)
 from cyy_torch_toolbox.visualization import Window
 from sklearn.cluster import AgglomerativeClustering, KMeans
 from sklearn.manifold import TSNE
@@ -33,7 +34,7 @@ def compute_contribution(config, training_indices, label):
         with open(os.path.join(result_dir, "contribution_dict.json"), mode="rt") as f:
             contribution_dict = json.load(f)
             contribution_dict = change_mapping_keys(contribution_dict, int, True)
-            get_logger().info("use cached dict for label %s", label)
+            log_info("use cached dict for label %s", label)
     else:
         tester = config.create_inferencer()
 
@@ -125,7 +126,7 @@ if __name__ == "__main__":
             print("fake mean is ", np.mean(fake_matrix, axis=0), file=f)
             print("real mean is ", np.mean(real_matrix, axis=0), file=f)
 
-        get_logger().info("get contribution_matrix for label %s", label)
+        log_info("get contribution_matrix for label %s", label)
         contribution_array = np.array(contribution_matrix)
 
         contribution_array = (
@@ -183,13 +184,13 @@ if __name__ == "__main__":
             normal_cluster = clusters[1]
             noisy_cluster = clusters[0]
 
-        get_logger().info(
+        log_info(
             "class %s,normal_cluster len is %s,noisy_cluster len is %s",
             dc.get_label_names()[label],
             len(normal_cluster),
             len(noisy_cluster),
         )
-        get_logger().info(
+        log_info(
             "class %s,normal_labels len is %s,noisy_labels len is %s",
             get_dataset_label_names(dataset_name)[label],
             len(normal_labels),
@@ -201,14 +202,14 @@ if __name__ == "__main__":
         negative_overrates.append(
             len(noisy_labels & noisy_cluster) / len(noisy_labels | noisy_cluster)
         )
-        get_logger().info(
+        log_info(
             "class %s,overlay rate in normal_cluster is %s,noisy_cluster is %s",
             get_dataset_label_names(dataset_name)[label],
             positive_overrates[-1],
             negative_overrates[-1],
         )
 
-    get_logger().info(
+    log_info(
         "average overlay rate in normal_cluster is %s,noisy_cluster is %s",
         np.mean(positive_overrates),
         np.mean(negative_overrates),

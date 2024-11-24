@@ -3,8 +3,8 @@
 import json
 
 import hydra
-from cyy_naive_lib.log import get_logger
-from cyy_torch_algorithm.hydra.hydra_config import HyDRAConfig
+from cyy_naive_lib.log import log_info
+from cyy_torch_xai.hydra.hydra_config import HyDRAConfig
 
 from util import analysis_contribution, save_image
 
@@ -32,8 +32,8 @@ if __name__ == "__main__":
     positive_contributions, negative_contributions = analysis_contribution(
         contribution_dict, threshold=other_config["threshold"]
     )
-    get_logger().info("positive contributions are %s", positive_contributions)
-    get_logger().info("negative contributions are %s", negative_contributions)
+    log_info("positive contributions are %s", positive_contributions)
+    log_info("negative contributions are %s", negative_contributions)
     for k in positive_contributions:
         save_image(".", trainer, positive_contributions, index=k)
 
