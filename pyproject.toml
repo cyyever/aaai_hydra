@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aaai_hydra"
+version = "1.0"
+requires-python = ">=3.12"
+readme = {file = "README.md", content-type = "text/markdown"}
+authors = [
+  {name = "cyy", email = "cyyever@outlook.com"},
+]
+license = {text = "BSD License"}
+classifiers = [
+  "Programming Language :: Python"
+]
+
+dynamic = ["dependencies"]
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+
+[project.urls]
+Repository = "https://github.com/cyyever/aaai_hydra"
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+]
