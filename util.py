@@ -1,13 +1,15 @@
-import copy
 import os
 
+import cyy_torch_vision  # noqa: F401
 import torch
 from cyy_naive_lib.algorithm.mapping_op import get_mapping_values_by_key_order
 from cyy_naive_lib.log import log_info
-from cyy_torch_toolbox import subset_dp
-from cyy_torch_toolbox import Executor
-from cyy_torch_toolbox import Inferencer
-from cyy_torch_toolbox import MachineLearningPhase
+from cyy_torch_toolbox import (
+    MachineLearningPhase,
+    Trainer,
+)
+from cyy_torch_toolbox.metrics.prob_metric import ProbabilityMetric
+from cyy_torch_vision import VisionDatasetUtil
 
 
 def analysis_contribution(
@@ -36,35 +38,24 @@ def analysis_contribution(
     return positive_contributions, negative_contributions
 
 
-def get_instance_statistics(tester: Inferencer, instance_dataset) -> dict:
-    tester = copy.deepcopy(tester)
-    tester.dataset_collection.transform_dataset(
-        MachineLearningPhase.Test, lambda *args: instance_dataset
-    )
-    tester.inference(sample_prob=True)
-    return tester.prob_metric.get_prob(1)[0]
-
-
 def save_image(
-    save_dir: str, executor: Executor, contribution: dict, index: int
+    save_dir: str, executor: Trainer, contribution: dict, index: int
 ) -> None:
-    dataset = subset_dp(executor.dataset, [index])
-    tester = executor
-    if hasattr(executor, "get_inferencer"):
-        tester = executor.get_inferencer(phase=MachineLearningPhase.Test)
+    tester = executor.get_inferencer(phase=MachineLearningPhase.Training)
+    tester.dataset_collection.set_subset(
+        phase=MachineLearningPhase.Training, indices={index}
+    )
+    prob_metric = ProbabilityMetric()
+    tester.append_hook(prob_metric, "prob")
+    tester.inference()
+    prob_index, prob = prob_metric.get_prob(epoch=1)[0]
 
-    prob_index, prob = get_instance_statistics(tester, dataset)
-
-    executor.dataset_util.save_sample_image(
+    util = tester.dataset_util
+    assert isinstance(util, VisionDatasetUtil)
+    util.save_sample_image(
         index,
         path=os.path.join(
             save_dir,
-            "index_{}_contribution_{}_predicted_class_{}_prob_{}_real_class_{}.jpg".format(
-                index,
-                contribution[index],
-                executor.dataset_util.get_label_names()[prob_index],
-                prob,
-                executor.dataset_util.get_label_names()[dataset[0][1]],
-            ),
+            f"index_{index}_contribution_{contribution[index]}_predicted_class_{executor.dataset_util.get_label_names()[prob_index]}_prob_{prob}_real_class_{tester.dataset_util.get_label_names()[list(tester.dataset_util.get_labels())[0]]}.jpg",
         ),
     )

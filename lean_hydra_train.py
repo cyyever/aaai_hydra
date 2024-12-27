@@ -1,15 +1,16 @@
 import datetime
 import os
 
+import cyy_torch_vision  # noqa: F401
 import hydra
 from cyy_naive_lib.log import add_file_handler
-from cyy_torch_xai.lean_hydra.lean_hydra_config import LeanHyDRAConfig
+from cyy_torch_xai.lean_hydra import LeanHyDRAConfig
 
 config = LeanHyDRAConfig()
 
 
 @hydra.main(config_path="conf", version_base=None)
-def load_config(conf):
+def load_config(conf) -> None:
     global config
     if len(conf) == 1:
         conf = next(iter(conf.values()))
@@ -23,7 +24,7 @@ if __name__ == "__main__":
             "log",
             config.dc_config.dataset_name,
             config.model_config.model_name,
-            "{date:%Y-%m-%d_%H_%M_%S}.log".format(date=datetime.datetime.now()),
+            f"{datetime.datetime.now():%Y-%m-%d_%H_%M_%S}.log",
         )
     )
     lean_hydra_trainer = config.create_deterministic_trainer()
