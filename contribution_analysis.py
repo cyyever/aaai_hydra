@@ -26,7 +26,7 @@ if __name__ == "__main__":
     load_config()
     trainer = config.create_trainer()
 
-    with open(other_config["contribution_path"], mode="rt", encoding="utf8") as f:
+    with open(other_config["contribution_path"], encoding="utf8") as f:
         contribution_dict = {int(k): v for k, v in json.load(f).items()}
 
     positive_contributions, negative_contributions = analysis_contribution(
