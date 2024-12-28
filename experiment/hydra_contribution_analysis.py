@@ -14,8 +14,7 @@ from cyy_naive_lib.algorithm.mapping_op import (
 )
 from cyy_naive_lib.log import log_info
 from cyy_torch_algorithm.hydra.hydra_analyzer import HyDRAAnalyzer
-from cyy_torch_toolbox import DatasetUtil, sub_dataset
-from cyy_torch_toolbox import MachineLearningPhase
+from cyy_torch_toolbox import DatasetUtil, MachineLearningPhase, sub_dataset
 
 
 def get_instance_statistics(tester, instance_dataset) -> dict:
@@ -35,13 +34,7 @@ def save_training_image(save_dir, tester, contribution, training_dataset, index)
         0,
         os.path.join(
             save_dir,
-            "index_{}_contribution_{}_predicted_class_{}_prob_{}_real_class_{}.jpg".format(
-                index,
-                contribution[index],
-                max_prob_index,
-                max_prob,
-                sample_dataset[0][1],
-            ),
+            f"index_{index}_contribution_{contribution[index]}_predicted_class_{max_prob_index}_prob_{max_prob}_real_class_{sample_dataset[0][1]}.jpg",
         ),
     )
 
@@ -54,13 +47,7 @@ def save_test_image(save_dir, tester, contribution, index):
         0,
         os.path.join(
             save_dir,
-            "index_{}_contribution_{}_predicted_class_{}_prob_{}_real_class_{}.jpg".format(
-                index,
-                contribution[index],
-                max_prob_index,
-                max_prob,
-                sample_dataset[0][1],
-            ),
+            f"index_{index}_contribution_{contribution[index]}_predicted_class_{max_prob_index}_prob_{max_prob}_real_class_{sample_dataset[0][1]}.jpg",
         ),
     )
 
@@ -79,7 +66,6 @@ if __name__ == "__main__":
     if args.sample_index is None:
         with open(
             os.path.join(args.hydra_dir, "approx_hydra_contribution.json"),
-            mode="rt",
         ) as f:
             contribution_dict = json.load(f)
             contribution = torch.Tensor(
