@@ -2,14 +2,14 @@ import datetime
 import os
 
 import cyy_torch_vision  # noqa: F401
-import hydra
+import hydra as config_loader
 from cyy_naive_lib.log import add_file_handler
 from cyy_torch_xai.lean_hydra import LeanHyDRAConfig
 
 config = LeanHyDRAConfig()
 
 
-@hydra.main(config_path="conf", version_base=None)
+@config_loader.main(config_path="conf", version_base=None)
 def load_config(conf) -> None:
     global config
     if len(conf) == 1:
