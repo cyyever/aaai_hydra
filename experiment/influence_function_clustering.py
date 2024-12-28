@@ -21,7 +21,7 @@ def compute_contribution(config, training_indices, label):
     )
 
     contribution_dict = dict()
-    with open(config.IF_dir, mode="rt") as f:
+    with open(config.IF_dir) as f:
         all_contribution_dict = change_mapping_keys(json.load(f), int, True)
         for index, v in all_contribution_dict.items():
             if index in training_indices:
@@ -63,9 +63,7 @@ if __name__ == "__main__":
         log_info("get contribution_matrix for label %s", label)
         contribution_array = np.array(contribution_matrix)
         dataset_name = config.dc_config.dataset_name
-        if dataset_name == "MNIST":
-            clustering_res = KMeans(n_clusters=2).fit(contribution_array)
-        elif dataset_name == "FashionMNIST":
+        if dataset_name == "MNIST" or dataset_name == "FashionMNIST":
             clustering_res = KMeans(n_clusters=2).fit(contribution_array)
         elif dataset_name == "CIFAR10":
             # clustering_res = KMeans(n_clusters=2).fit(contribution_array)
@@ -77,7 +75,7 @@ if __name__ == "__main__":
 
         assert len(indices) == len(clustering_res.labels_)
         clusters: list = [set(), set()]
-        for index, cluster_id in zip(indices, clustering_res.labels_):
+        for index, cluster_id in zip(indices, clustering_res.labels_, strict=False):
             clusters[cluster_id].add(index)
 
         noisy_labels = set(noisy_label_dict[label])
