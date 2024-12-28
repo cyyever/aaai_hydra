@@ -89,7 +89,7 @@ def compute_distribution(
             result_dir,
             prefix + ".mean.json",
         ),
-        mode="wt",
+        mode="w",
     ) as f:
         json.dump(means, f)
 
@@ -100,7 +100,7 @@ def compute_distribution(
             result_dir,
             prefix + ".mean.txt",
         ),
-        mode="wt",
+        mode="w",
     ) as f:
         for subset_label in sorted(means.keys()):
             line = ""
@@ -110,12 +110,12 @@ def compute_distribution(
                 if subset_label == test_label:
                     line += (
                         " \\mathbf{\\textcolor{red}{"
-                        + "{:e}".format(means[subset_label][test_label])
+                        + f"{means[subset_label][test_label]:e}"
                         + "}}"
                     )
                     diagonal_sum += means[subset_label][test_label]
                 else:
-                    line += " " + "{:e}".format(means[subset_label][test_label])
+                    line += " " + f"{means[subset_label][test_label]:e}"
             print(line, file=f)
             means_list.append(sub_list)
 
@@ -124,7 +124,7 @@ def compute_distribution(
             result_dir,
             prefix + ".diagonal_sum.txt",
         ),
-        mode="wt",
+        mode="w",
     ) as f:
         print(diagonal_sum, file=f)
 
@@ -162,7 +162,7 @@ if __name__ == "__main__":
             "hydra_distribution",
             config.dc_config.dataset_name,
             config.model_config.model_name,
-            "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
+            f"{datetime.datetime.now():%Y-%m-%d_%H:%M:%S}.log",
         )
     )
     trainer = config.create_trainer()
