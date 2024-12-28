@@ -8,3 +8,4 @@ use_hessian: false
 use_amp: false
 learning_rate: 0.01
 tracking_percentage: 0.001
+cache_transforms: cpu
