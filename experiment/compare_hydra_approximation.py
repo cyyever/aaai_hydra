@@ -20,7 +20,7 @@ if __name__ == "__main__":
             "hydra",
             config.dc_config.dataset_name,
             config.model_name,
-            "{date:%Y-%m-%d_%H:%M:%S}.log".format(date=datetime.datetime.now()),
+            f"{datetime.datetime.now():%Y-%m-%d_%H:%M:%S}.log",
         )
     )
     hydra_trainer, hydra_hook = config.create_trainer(return_hydra_hook=True)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                     save_dir,
                     "approximation_distance_" + str(epoch) + ".json",
                 ),
-                mode="wt",
+                mode="w",
                 encoding="utf8",
             ) as f:
                 json.dump(hyper_gradient_distance, f)
@@ -86,7 +86,7 @@ if __name__ == "__main__":
                     + str(epoch)
                     + ".json",
                 ),
-                mode="wt",
+                mode="w",
                 encoding="utf8",
             ) as f:
                 json.dump(approximation_hyper_gradient_contribution, f)
@@ -95,7 +95,7 @@ if __name__ == "__main__":
                     save_dir,
                     "hessian_hyper_gradient_contribution.epoch_" + str(epoch) + ".json",
                 ),
-                mode="wt",
+                mode="w",
                 encoding="utf8",
             ) as f:
                 json.dump(hessian_hyper_gradient_contribution, f)

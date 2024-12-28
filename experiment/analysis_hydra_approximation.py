@@ -20,7 +20,7 @@ for epoch in range(1000):
     file = os.path.join(save_dir, "approximation_distance_" + str(epoch) + ".json")
     if os.path.isfile(file):
         epochs.append(epoch)
-        with open(file, "r") as f:
+        with open(file, encoding="utf8") as f:
             distances = json.load(f)
             distance_mean = torch.Tensor(list(distances.values())).mean()
             mean_error[epoch] = distance_mean
@@ -40,7 +40,7 @@ for epoch in range(1000):
         save_dir, "hessian_hyper_gradient_contribution.epoch_" + str(epoch) + ".json"
     )
     if os.path.isfile(file):
-        with open(file, "r") as f:
+        with open(file, encoding="utf8") as f:
             epoch_contributions[epoch] = json.load(f)
 
 epoch_approximation_contributions = {}
@@ -50,7 +50,7 @@ for epoch in range(1000):
         "approximation_hyper_gradient_contribution.epoch_" + str(epoch) + ".json",
     )
     if os.path.isfile(file):
-        with open(file, "r") as f:
+        with open(file, encoding="utf8") as f:
             epoch_approximation_contributions[epoch] = json.load(f)
 
 epoch_classic_influence_contributions_contributions = {}
@@ -59,7 +59,7 @@ for epoch in range(1000):
         save_dir, "classic_influence_function_contribution_" + str(epoch) + ".json"
     )
     if os.path.isfile(file):
-        with open(file, "r") as f:
+        with open(file, encoding="utf8") as f:
             epoch_classic_influence_contributions_contributions[epoch] = json.load(f)
 
 
