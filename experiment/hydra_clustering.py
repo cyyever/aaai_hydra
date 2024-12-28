@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+import argparse
 import json
 import os
-import argparse
 import pickle
 
 import numpy as np
@@ -31,7 +31,7 @@ def compute_contribution(config, training_indices, label):
 
     contribution_dict = None
     if os.path.isfile(os.path.join(result_dir, "contribution_dict.json")):
-        with open(os.path.join(result_dir, "contribution_dict.json"), mode="rt") as f:
+        with open(os.path.join(result_dir, "contribution_dict.json")) as f:
             contribution_dict = json.load(f)
             contribution_dict = change_mapping_keys(contribution_dict, int, True)
             log_info("use cached dict for label %s", label)
@@ -61,7 +61,7 @@ def compute_contribution(config, training_indices, label):
             test_subset, training_indices
         )
 
-        with open(os.path.join(result_dir, "contribution_dict.json"), mode="wt") as f:
+        with open(os.path.join(result_dir, "contribution_dict.json"), mode="w") as f:
             json.dump(contribution_dict, f)
         assert set(contribution_dict.keys()) == set(training_indices)
 
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         )
         with open(
             os.path.join(result_dir, "contribution_list_" + str(label) + ".txt"),
-            mode="wt",
+            mode="w",
         ) as f:
             for k, v in contribution_dict.items():
                 spaced_row: str = " ".join([str(a) for a in flatten_mapping(v)])
@@ -111,7 +111,7 @@ if __name__ == "__main__":
             os.path.join(
                 result_dir, "distribution_of_contribution_list_" + str(label) + ".txt"
             ),
-            mode="wt",
+            mode="w",
         ) as f:
             fake_matrix = []
             real_matrix = []
@@ -153,9 +153,7 @@ if __name__ == "__main__":
         win.set_opt("markersize", 2)
         win.plot_scatter(x=torch.from_numpy(tsne_res), y=is_real_label)
         Window.save_envs()
-        if dataset_name == "MNIST":
-            clustering_res = KMeans(n_clusters=2).fit(contribution_array)
-        elif dataset_name == "FashionMNIST":
+        if dataset_name == "MNIST" or dataset_name == "FashionMNIST":
             clustering_res = KMeans(n_clusters=2).fit(contribution_array)
         elif dataset_name == "CIFAR10":
             # clustering_res = KMeans(n_clusters=2).fit(contribution_array)
@@ -173,7 +171,7 @@ if __name__ == "__main__":
 
         assert len(indices) == len(clustering_res.labels_)
         clusters: list = [set(), set()]
-        for index, cluster_id in zip(indices, clustering_res.labels_):
+        for index, cluster_id in zip(indices, clustering_res.labels_, strict=False):
             clusters[cluster_id].add(index)
 
         noisy_labels = set(noisy_label_dict[label])
