@@ -10,10 +10,11 @@ from cyy_torch_toolbox import (
 )
 from cyy_torch_toolbox.metrics.prob_metric import ProbabilityMetric
 from cyy_torch_vision import VisionDatasetUtil
+from cyy_torch_xai import SampleContributions
 
 
 def analysis_contribution(
-    contribution_dict: dict, threshold: float
+    contribution_dict: SampleContributions, threshold: float
 ) -> tuple[dict, dict]:
     contribution = torch.Tensor(
         list(get_mapping_values_by_key_order(contribution_dict))

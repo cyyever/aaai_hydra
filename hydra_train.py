@@ -4,7 +4,7 @@ import os
 import cyy_torch_vision  # noqa: F401
 import hydra
 from cyy_naive_lib.log import add_file_handler
-from cyy_torch_xai.hydra.hydra_config import HyDRAConfig
+from cyy_torch_xai.hydra import HyDRAConfig
 
 config = HyDRAConfig()
 
