@@ -2,6 +2,7 @@ import json
 
 import hydra
 from cyy_naive_lib.log import log_info
+from cyy_torch_toolbox import Config
 from cyy_torch_xai import SampleContributions
 from cyy_torch_xai.hydra import HyDRAConfig
 
@@ -18,13 +19,17 @@ def load_config(conf):
     global other_config
     if len(conf) == 1:
         conf = next(iter(conf.values()))
-    other_config = HyDRAConfig.load_config(config, conf, check_config=False)
+    other_config = Config.load_config(config, conf, check_config=False)
 
 
 if __name__ == "__main__":
     load_config()
     trainer = config.create_trainer()
     assert other_config is not None
+    model_path = os.path.join(
+        other_config["contribution_path"], "model", "epoch_" + str(epoch) + ".pt"
+    )
+    trainer.model.load_state_dict(torch.load(model_path))
 
     with open(other_config["contribution_path"], encoding="utf8") as f:
         contribution_dict: SampleContributions = {
