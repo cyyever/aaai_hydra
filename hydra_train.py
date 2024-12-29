@@ -4,6 +4,7 @@ import os
 import cyy_torch_vision  # noqa: F401
 import hydra
 from cyy_naive_lib.log import add_file_handler
+from cyy_torch_toolbox.hook.keep_model import KeepModelHook
 from cyy_torch_xai.hydra import HyDRAConfig
 
 config = HyDRAConfig()
@@ -29,4 +30,7 @@ if __name__ == "__main__":
         )
     )
     hydra_trainer, _ = config.create_trainer_and_hook()
+    model_hook = KeepModelHook()
+    model_hook.save_last_model = True
+    hydra_trainer.append_hook(model_hook)
     hydra_trainer.train()
