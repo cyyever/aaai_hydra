@@ -1,1 +1,1 @@
-env CUDA_LAUNCH_BLOCKING=1 python3 ./contribution_analysis.py --config-name mnist.yaml  ++contribution_path=session/MNIST/LeNet5/2024-12-29_09_36_59/b4c3de90-bd4b-4a89-b7dd-ea67b10df1f9/lean_HyDRA/lean_hydra_contribution.json ++threshold=0.9
+env CUDA_LAUNCH_BLOCKING=1 python3 ./contribution_analysis.py --config-name mnist.yaml ++contribution_path=./session/MNIST/LeNet5/2024-12-29_11_18_09/55a86e46-ae8e-442b-be02-145d98319d6d/lean_HyDRA/lean_hydra_contribution.json ++threshold=0.9

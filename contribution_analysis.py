@@ -1,6 +1,8 @@
 import json
+import os
 
 import hydra
+import torch
 from cyy_naive_lib.log import log_info
 from cyy_torch_toolbox import Config
 from cyy_torch_xai import SampleContributions
@@ -27,7 +29,10 @@ if __name__ == "__main__":
     trainer = config.create_trainer()
     assert other_config is not None
     model_path = os.path.join(
-        other_config["contribution_path"], "model", "epoch_" + str(epoch) + ".pt"
+        os.path.dirname(other_config["contribution_path"]),
+        "..",
+        "model",
+        "last.pt",
     )
     trainer.model.load_state_dict(torch.load(model_path))
 

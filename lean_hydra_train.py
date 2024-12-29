@@ -29,9 +29,9 @@ if __name__ == "__main__":
         )
     )
     lean_hydra_trainer = config.create_deterministic_trainer()
-    lean_hydra_trainer.train()
     model_hook = KeepModelHook()
     model_hook.save_last_model = True
-    hydra_trainer.append_hook(model_hook)
+    lean_hydra_trainer.append_hook(model_hook)
+    lean_hydra_trainer.train()
     lean_hydra_trainer, _ = config.recreate_trainer_and_hook()
     lean_hydra_trainer.train()
