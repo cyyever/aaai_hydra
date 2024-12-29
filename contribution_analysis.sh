@@ -1,1 +1,1 @@
-python3 contribution_analysis.py --config-name mnist.yaml +threshold=0.8 +model_path=session/MNIST/LeNet5/2022-09-16_16_58_24/ecce9ba9-b634-41ee-aeb6-c8b1610ba1c8/model/last.pt +contribution_path=session/MNIST/LeNet5/2022-09-16_16_58_24/ecce9ba9-b634-41ee-aeb6-c8b1610ba1c8/lean_HyDRA/lean_hydra_contribution.json
+env CUDA_LAUNCH_BLOCKING=1 python3 ./contribution_analysis.py --config-name mnist.yaml  ++contribution_path=session/MNIST/LeNet5/2024-12-29_09_36_59/b4c3de90-bd4b-4a89-b7dd-ea67b10df1f9/lean_HyDRA/lean_hydra_contribution.json ++threshold=0.9

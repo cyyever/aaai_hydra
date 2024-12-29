@@ -23,7 +23,7 @@ def load_config(conf):
 
 if __name__ == "__main__":
     load_config()
-    trainer = config.create_trainer()["trainer"]
+    trainer = config.create_trainer()
     assert other_config is not None
 
     with open(other_config["contribution_path"], encoding="utf8") as f:

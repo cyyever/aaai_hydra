@@ -42,21 +42,24 @@ def analysis_contribution(
 def save_image(
     save_dir: str, executor: Trainer, contribution: dict, index: int
 ) -> None:
-    tester = executor.get_inferencer(phase=MachineLearningPhase.Training)
+    label_names = executor.dataset_util.get_label_names()
+    tester = executor.get_inferencer(
+        phase=MachineLearningPhase.Training, copy_dataset=True
+    )
     tester.dataset_collection.set_subset(
         phase=MachineLearningPhase.Training, indices={index}
     )
     prob_metric = ProbabilityMetric()
     tester.append_hook(prob_metric, "prob")
-    tester.inference()
-    prob_index, prob = prob_metric.get_prob(epoch=1)[0]
+    tester.get_sample_loss()
+    prob_index, prob = prob_metric.get_prob(epoch=1)[index]
 
     util = tester.dataset_util
     assert isinstance(util, VisionDatasetUtil)
     util.save_sample_image(
-        index,
+        0,
         path=os.path.join(
             save_dir,
-            f"index_{index}_contribution_{contribution[index]}_predicted_class_{executor.dataset_util.get_label_names()[prob_index]}_prob_{prob}_real_class_{tester.dataset_util.get_label_names()[list(tester.dataset_util.get_labels())[0]]}.jpg",
+            f"index_{index}_contribution_{contribution[index]}_predicted_class_{label_names[prob_index]}_prob_{prob}_real_class_{label_names[list(tester.dataset_util.get_labels())[0]]}.jpg",
         ),
     )
